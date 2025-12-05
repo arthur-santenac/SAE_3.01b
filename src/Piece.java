@@ -11,4 +11,9 @@ public abstract class Piece {
 
     abstract List<Case> casesPossibles();
     
+    @Override
+    public String toString() {
+        return " " + this.img + " ";
+    }
+
 }

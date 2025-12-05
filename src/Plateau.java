@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -58,20 +57,22 @@ public class Plateau{
         } else {
             copieTerrain = this.terrain;
         }
-        String res = "┌───┬───┬───┬───┬───┬───┬───┬───┐\n";
+        String res = "     A   B   C   D   E   F   G   H\n";
+        res += "   ┌───┬───┬───┬───┬───┬───┬───┬───┐\n";
         for(int i = 0; i<8; i++){
+            res += " " + (i + 1) + " │";
             for(int j = 0; j<8; j++){
-                res += "│";
                 Piece piece = copieTerrain.get(i).get(j).getPiece();
                 if (piece == null) res += "   ";
                 else res += piece.toString();
+                res += "│";
             }
-            res += "│\n";
+            res += "\n";
             if (i != 7) {
-                res += "├───┼───┼───┼───┼───┼───┼───┼───┤\n";
+                res += "   ├───┼───┼───┼───┼───┼───┼───┼───┤\n";
             }
         }
-        res += "└───┴───┴───┴───┴───┴───┴───┴───┘";
+        res += "   └───┴───┴───┴───┴───┴───┴───┴───┘";
         System.out.println(res);
         
         
