@@ -6,6 +6,7 @@ public abstract class Piece {
         this.img = img;
         this.joueur = joueur;
     }
+
     @Override
     public String toString(){
         return this.img;

@@ -5,9 +5,11 @@ public class Case {
     public Case(){
 
     }
+
     public void setPieceCourante(Piece piece){
         this.pieceCourante = piece;
     }
+    
     public Piece getPiece(){
         if (pieceCourante instanceof Piece){
             return this.pieceCourante;
