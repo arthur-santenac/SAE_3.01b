@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class Tour extends Piece {
@@ -8,7 +9,8 @@ public class Tour extends Piece {
     }
 
     public List<Case> casesPossibles() {
-        
+        List<Case> res = new ArrayList<>();
+        return res;
     }
 
 }

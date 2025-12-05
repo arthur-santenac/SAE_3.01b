@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -43,13 +45,24 @@ public class Plateau{
         this.terrain.get(ligne).get(colonne).setPieceCourante(piece);
     }
 
-    public void affichage(){
+    public void affichage(boolean inverser){
+        List<List<Case>> copieTerrain;
+        if (inverser) {
+            copieTerrain = new ArrayList<>();
+            for (List<Case> ligne : this.terrain) {
+                List<Case> copieLigne = new ArrayList<>(ligne);
+                Collections.reverse(copieLigne);
+                copieTerrain.add(copieLigne);
+            }
+            Collections.reverse(copieTerrain);
+        } else {
+            copieTerrain = this.terrain;
+        }
         String res = "┌───┬───┬───┬───┬───┬───┬───┬───┐\n";
         for(int i = 0; i<8; i++){
-
             for(int j = 0; j<8; j++){
                 res += "│";
-                Piece piece = terrain.get(i).get(j).getPiece();
+                Piece piece = copieTerrain.get(i).get(j).getPiece();
                 if (piece == null) res += "   ";
                 else res += piece.toString();
             }
@@ -60,6 +73,7 @@ public class Plateau{
         }
         res += "└───┴───┴───┴───┴───┴───┴───┴───┘";
         System.out.println(res);
+        
         
     }
 }
