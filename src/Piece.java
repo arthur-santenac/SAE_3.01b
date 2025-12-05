@@ -1,15 +1,14 @@
+import java.util.List;
+
 public abstract class Piece {
     protected String img;
-    protected int joueur;
+    protected int numJoueur;
 
-    public Piece(String img, int joueur) {
+    public Piece(String img, int numJoueur) {
         this.img = img;
-        this.joueur = joueur;
+        this.numJoueur = numJoueur;
     }
 
-    @Override
-    public String toString(){
-        return this.img;
-    }
-
+    abstract List<Case> casesPossibles();
+    
 }
