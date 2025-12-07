@@ -44,6 +44,15 @@ public class Plateau{
         this.terrain.get(ligne).get(colonne).setPieceCourante(piece);
     }
 
+    public List<List<Case>> getTerrain() {
+        return this.terrain;
+    }
+
+    public void deplacer(Case caseDepart, Case caseArrive) {
+        caseArrive.setPieceCourante(caseDepart.getPiece());
+        caseDepart.setPieceCourante(null);
+    }
+
     public void affichage(boolean inverser){
         List<List<Case>> copieTerrain;
         if (inverser) {
@@ -60,7 +69,7 @@ public class Plateau{
         String res = "     A   B   C   D   E   F   G   H\n";
         res += "   ┌───┬───┬───┬───┬───┬───┬───┬───┐\n";
         for(int i = 0; i<8; i++){
-            res += " " + (i + 1) + " │";
+            res += " " + (8 - i) + " │";
             for(int j = 0; j<8; j++){
                 Piece piece = copieTerrain.get(i).get(j).getPiece();
                 if (piece == null) res += "   ";
@@ -74,8 +83,6 @@ public class Plateau{
         }
         res += "   └───┴───┴───┴───┴───┴───┴───┴───┘";
         System.out.println(res);
-        
-        
     }
 }
 
