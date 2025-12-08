@@ -53,7 +53,7 @@ public class Plateau{
         caseDepart.setPieceCourante(null);
     }
 
-    public void affichage(boolean inverser){
+    public void affichage(){
         String res = "     A   B   C   D   E   F   G   H\n";
         res += "   ┌───┬───┬───┬───┬───┬───┬───┬───┐\n";
         for(int i = 0; i<8; i++){
