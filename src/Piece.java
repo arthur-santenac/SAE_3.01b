@@ -9,7 +9,7 @@ public abstract class Piece {
         this.numJoueur = numJoueur;
     }
 
-    abstract List<Case> casesPossibles();
+    abstract List<Case> casesPossibles(Plateau plateau, int posX, int posY);
 
     public int getNumJoueur() {
         return numJoueur;
