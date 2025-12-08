@@ -11,45 +11,41 @@ public class Fou extends Piece {
     public List<Case> casesPossibles(Plateau plateau, int posX, int posY) {
         List<Case> res = new ArrayList<>();
         for (int i = posX + 1; i < 8; i++) {
-            if (plateau.getTerrain().get(i).get(posY).getPiece() == null) {
-                res.add(plateau.getTerrain().get(i).get(posY));
-            } 
+            if (plateau.getTerrain().get(i).get(i).getPiece() == null) {
+                res.add(plateau.getTerrain().get(i).get(i));
+            }
+            else if(plateau.getTerrain().get(i).get(i).getPiece() != null){
+                if (plateau.getTerrain().get(i).get(i).getPiece().getNumJoueur() != this.numJoueur) {
+                    res.add(plateau.getTerrain().get(i).get(i));
+                }
+                break;
+            }
+            else if (plateau.getTerrain().get(i).get(-i).getPiece() == null) {
+                res.add(plateau.getTerrain().get(i).get(-i));
+            }
             else {
-                if (plateau.getTerrain().get(i).get(posY).getPiece().getNumJoueur() != this.numJoueur) {
-                    res.add(plateau.getTerrain().get(i).get(posY));
+                if (plateau.getTerrain().get(i).get(-i).getPiece().getNumJoueur() != this.numJoueur) {
+                    res.add(plateau.getTerrain().get(i).get(-i));
                 }
                 break;
             }
         }
         for (int i = posX - 1; i >= 0; i--) {
-            if (plateau.getTerrain().get(i).get(posY).getPiece() == null) {
-                res.add(plateau.getTerrain().get(i).get(posY));
-            } 
-            else {
-                if (plateau.getTerrain().get(i).get(posY).getPiece().getNumJoueur() != this.numJoueur) {
-                    res.add(plateau.getTerrain().get(i).get(posY));
+            if (plateau.getTerrain().get(i).get(i).getPiece() == null) {
+                res.add(plateau.getTerrain().get(i).get(i));
+            }
+            else if(plateau.getTerrain().get(i).get(i).getPiece() != null){
+                if (plateau.getTerrain().get(i).get(i).getPiece().getNumJoueur() != this.numJoueur) {
+                    res.add(plateau.getTerrain().get(i).get(i));
                 }
                 break;
             }
-        }
-        for (int i = posY + 1; i < 8; i++) {
-            if (plateau.getTerrain().get(posX).get(i).getPiece() == null) {
-                res.add(plateau.getTerrain().get(posX).get(i));
-            } 
-            else {
-                if (plateau.getTerrain().get(posX).get(i).getPiece().getNumJoueur() != this.numJoueur) {
-                    res.add(plateau.getTerrain().get(posX).get(i));
-                }
-                break;
+            else if (plateau.getTerrain().get(i).get(-i).getPiece() == null) {
+                res.add(plateau.getTerrain().get(i).get(-i));
             }
-        }
-        for (int i = posY - 1; i >= 0; i--) {
-            if (plateau.getTerrain().get(posX).get(i).getPiece() == null) {
-                res.add(plateau.getTerrain().get(posX).get(i));
-            } 
             else {
-                if (plateau.getTerrain().get(posX).get(i).getPiece().getNumJoueur() != this.numJoueur) {
-                    res.add(plateau.getTerrain().get(posX).get(i));
+                if (plateau.getTerrain().get(i).get(-i).getPiece().getNumJoueur() != this.numJoueur) {
+                    res.add(plateau.getTerrain().get(i).get(-i));
                 }
                 break;
             }
