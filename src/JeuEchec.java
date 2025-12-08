@@ -42,13 +42,8 @@ public class JeuEchec {
                 int iArr =  Character.getNumericValue(coup.charAt(3));
                 Case caseDepart;
                 Case caseArrive;
-                if (joueurActuel == 1) {
-                    caseDepart = this.plateau.getTerrain().get(8 - iDep).get(jDep);
-                    caseArrive = this.plateau.getTerrain().get(8 - iArr).get(jArr);
-                } else {
-                    caseDepart = this.plateau.getTerrain().get(iDep - 1).get(7 - jDep);
-                    caseArrive = this.plateau.getTerrain().get(iArr - 1).get(7 - jArr);
-                }
+                caseDepart = this.plateau.getTerrain().get(8 - iDep).get(jDep);
+                caseArrive = this.plateau.getTerrain().get(8 - iArr).get(jArr);
                 if (caseDepart.getPiece() instanceof Piece) {
                     if (caseDepart.getPiece().getNumJoueur() == this.joueurActuel) {
                         if (!(caseArrive.getPiece() instanceof Piece) || caseArrive.getPiece().getNumJoueur() != this.joueurActuel) {
