@@ -22,16 +22,11 @@ public class JeuEchec {
         this.significationLettre.put('h', 7);
     }
 
-    public void afficherPlateau() {
-        if (joueurActuel == 1) this.plateau.affichage(false);
-        else this.plateau.affichage(true);
-    }
-
     public void lancerPartie() {
         while (true) {
             System.out.print("\033[H\033[2J");
             System.out.flush();
-            this.afficherPlateau();
+            this.plateau.affichage();;
             System.out.println("Au tour du joueur " + joueurActuel);
             System.out.println("Entrez le coup :");
             String coup = System.console().readLine();
@@ -44,9 +39,9 @@ public class JeuEchec {
                 Case caseArrive;
                 caseDepart = this.plateau.getTerrain().get(8 - iDep).get(jDep);
                 caseArrive = this.plateau.getTerrain().get(8 - iArr).get(jArr);
-                if (caseDepart.getPiece() instanceof Piece) {
+                if (caseDepart.getPiece() != null) {
                     if (caseDepart.getPiece().getNumJoueur() == this.joueurActuel) {
-                        if (!(caseArrive.getPiece() instanceof Piece) || caseArrive.getPiece().getNumJoueur() != this.joueurActuel) {
+                        if (caseArrive.getPiece() == null || caseArrive.getPiece().getNumJoueur() != this.joueurActuel) {
                             if (caseDepart.getPiece().casesPossibles(this.plateau, 8 - iDep, jDep).contains(caseArrive)) {
                                 this.plateau.deplacer(caseDepart, caseArrive);
                                 this.joueurActuel = 3 - this.joueurActuel;
