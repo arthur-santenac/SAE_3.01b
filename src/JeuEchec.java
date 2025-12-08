@@ -47,7 +47,7 @@ public class JeuEchec {
                 if (caseDepart.getPiece() instanceof Piece) {
                     if (caseDepart.getPiece().getNumJoueur() == this.joueurActuel) {
                         if (!(caseArrive.getPiece() instanceof Piece) || caseArrive.getPiece().getNumJoueur() != this.joueurActuel) {
-                            if (caseDepart.getPiece().casesPossibles().contains(caseArrive)) {
+                            if (caseDepart.getPiece().casesPossibles(this.plateau, 8 - iDep, jDep).contains(caseArrive)) {
                                 this.plateau.deplacer(caseDepart, caseArrive);
                                 this.joueurActuel = 3 - this.joueurActuel;
                             } else {

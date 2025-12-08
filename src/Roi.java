@@ -8,7 +8,7 @@ public class Roi extends Piece {
         if (numJoueur == 2) this.img = "♚";
     }
 
-    public List<Case> casesPossibles() {
+    public List<Case> casesPossibles(Plateau plateau, int posX, int posY) {
         List<Case> res = new ArrayList<>();
         return res;
     }
