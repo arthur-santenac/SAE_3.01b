@@ -1,9 +1,9 @@
 public class Case {
 
-    private Piece pieceCourante = null;
+    private Piece pieceCourante;
 
     public Case(){
-
+        this.pieceCourante = null;
     }
 
     public void setPieceCourante(Piece piece){

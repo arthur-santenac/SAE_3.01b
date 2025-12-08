@@ -10,5 +10,14 @@ public abstract class Piece {
     }
 
     abstract List<Case> casesPossibles();
+
+    public int getNumJoueur() {
+        return numJoueur;
+    }
     
+    @Override
+    public String toString() {
+        return " " + this.img + " ";
+    }
+
 }
