@@ -29,6 +29,8 @@ public class JeuEchec {
 
     public void lancerPartie() {
         while (true) {
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
             this.afficherPlateau();
             System.out.println("Au tour du joueur " + joueurActuel);
             System.out.println("Entrez le coup :");
