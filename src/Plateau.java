@@ -53,6 +53,17 @@ public class Plateau{
         caseDepart.setPieceCourante(null);
     }
 
+    public boolean contientDeuxRoi() {
+        int cpt = 0;
+        for (List<Case> cases : this.terrain) {
+            for (Case laCase : cases) {
+                if (laCase.getPiece() instanceof Roi) ++cpt;
+            }
+        }
+        if (cpt == 2) return true;
+        return false;
+    }
+
     public void affichage(){
         String res = "     A   B   C   D   E   F   G   H\n";
         res += "   ┌───┬───┬───┬───┬───┬───┬───┬───┐\n";
