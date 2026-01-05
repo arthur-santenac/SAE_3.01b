@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class Client {
 
     public static void main(String[] args) {
-        client("localhost", 5557);
+        client("localhost", 5556);
     }
 
     public static void client(String host, int port) {
