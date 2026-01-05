@@ -22,7 +22,7 @@ public class Server {
     }
 
     public static void main(String[] args) {
-        new Server().mainServer(5557);
+        new Server().mainServer(5556);
     }
 }
 
@@ -45,7 +45,86 @@ class Session extends Thread {
             String line;
             while ((line = in.readLine()) != null) {
                 line = line.trim();
-                System.out.println(line);
+                String[] commande = line.split("\\s+");
+                if (commande[0].equals("register")) {
+                    if (commande.length == 3) {
+
+                    } else {
+                        out.println("ERR usage: register <nom> <mdp>");
+                    }
+                } else if (commande[0].equals("connect")) {
+                    if (commande.length == 3) {
+
+                    } else {
+                        out.println("ERR usage: connect <nom> <mdp>");
+                    }
+                } else if (commande[0].equals("play")) {
+                    if (commande.length == ) {
+
+                    } else {
+                        out.println("ERR usage:");
+                    }
+                } else if (commande[0].equals("leave")) {
+                    if (commande.length == ) {
+
+                    } else {
+                        out.println("ERR usage:");
+                    }
+                } else if (commande[0].equals("quit")) {
+                    if (commande.length == ) {
+
+                    } else {
+                        out.println("ERR usage:");
+                    }
+                } else if (commande[0].equals("replay")) {
+                    if (commande.length == ) {
+
+                    } else {
+                        out.println("ERR usage:");
+                    }
+                } else if (commande[0].equals("new")) {
+                    if (commande.length == ) {
+
+                    } else {
+                        out.println("ERR usage:");
+                    }
+                } else if (commande[0].equals("ask")) {
+                    if (commande.length == ) {
+
+                    } else {
+                        out.println("ERR usage:");
+                    }
+                } else if (commande[0].equals("accept")) {
+                    if (commande.length == ) {
+
+                    } else {
+                        out.println("ERR usage:");
+                    }
+                } else if (commande[0].equals("players")) {
+                    if (commande.length == ) {
+
+                    } else {
+                        out.println("ERR usage:");
+                    }
+                } else if (commande[0].equals("save")) {
+                    if (commande.length == ) {
+
+                    } else {
+                        out.println("ERR usage:");
+                    }
+                } else if (commande[0].equals("list_games")) {
+                    if (commande.length == ) {
+
+                    } else {
+                        out.println("ERR usage:");
+                    }
+                } else if (commande[0].equals("load")) {
+                    if (commande.length == ) {
+
+                    } else {
+                        out.println("ERR usage:");
+                    }
+                }
             }
         } catch (IOException e) {
 
