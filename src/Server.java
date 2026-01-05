@@ -50,79 +50,79 @@ class Session extends Thread {
                     if (commande.length == 3) {
 
                     } else {
-                        out.println("ERR usage: register <nom> <mdp>");
+                        out.println("ERR usage: register <numJoueur> <motDePasse>");
                     }
                 } else if (commande[0].equals("connect")) {
                     if (commande.length == 3) {
 
                     } else {
-                        out.println("ERR usage: connect <nom> <mdp>");
+                        out.println("ERR usage: connect <numJoueur> <motDePasse>");
                     }
                 } else if (commande[0].equals("play")) {
-                    if (commande.length == ) {
+                    if (commande.length == 3) {
 
                     } else {
-                        out.println("ERR usage:");
+                        out.println("ERR usage: play <caseSource> <caseDestination>");
                     }
                 } else if (commande[0].equals("leave")) {
-                    if (commande.length == ) {
+                    if (commande.length == 1) {
 
                     } else {
-                        out.println("ERR usage:");
+                        out.println("ERR usage: leave");
                     }
                 } else if (commande[0].equals("quit")) {
-                    if (commande.length == ) {
+                    if (commande.length == 1) {
 
                     } else {
-                        out.println("ERR usage:");
+                        out.println("ERR usage: quit");
                     }
                 } else if (commande[0].equals("replay")) {
-                    if (commande.length == ) {
+                    if (commande.length == 1) {
 
                     } else {
-                        out.println("ERR usage:");
+                        out.println("ERR usage: replay");
                     }
                 } else if (commande[0].equals("new")) {
-                    if (commande.length == ) {
+                    if (commande.length == 1) {
 
                     } else {
-                        out.println("ERR usage:");
+                        out.println("ERR usage: new");
                     }
                 } else if (commande[0].equals("ask")) {
-                    if (commande.length == ) {
+                    if (commande.length == 2) {
 
                     } else {
-                        out.println("ERR usage:");
+                        out.println("ERR usage: ask <numJoueur>");
                     }
                 } else if (commande[0].equals("accept")) {
-                    if (commande.length == ) {
+                    if (commande.length == 2) {
 
                     } else {
-                        out.println("ERR usage:");
+                        out.println("ERR usage: accept <numJoueur>");
                     }
                 } else if (commande[0].equals("players")) {
-                    if (commande.length == ) {
+                    if (commande.length == 1) {
 
                     } else {
-                        out.println("ERR usage:");
+                        out.println("ERR usage: players");
                     }
                 } else if (commande[0].equals("save")) {
-                    if (commande.length == ) {
+                    if (commande.length == 1) {
 
                     } else {
-                        out.println("ERR usage:");
+                        out.println("ERR usage: save");
                     }
                 } else if (commande[0].equals("list_games")) {
-                    if (commande.length == ) {
+                    if (commande.length == 1) {
 
                     } else {
-                        out.println("ERR usage:");
+                        out.println("ERR usage: list_games");
                     }
                 } else if (commande[0].equals("load")) {
-                    if (commande.length == ) {
+                    if (commande.length == 2) {
 
                     } else {
-                        out.println("ERR usage:");
+                        out.println("ERR usage: load");
                     }
                 }
             }
