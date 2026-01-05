@@ -26,7 +26,7 @@ public class JeuEchec {
         while (true) {
             System.out.print("\033[H\033[2J");
             System.out.flush();
-            this.plateau.affichage();
+            this.plateau.affichage();;
             System.out.println("Au tour du joueur " + joueurActuel);
             System.out.println("Entrez le coup :");
             String coup = System.console().readLine();
@@ -44,7 +44,6 @@ public class JeuEchec {
                         if (caseArrive.getPiece() == null || caseArrive.getPiece().getNumJoueur() != this.joueurActuel) {
                             if (caseDepart.getPiece().casesPossibles(this.plateau, 8 - iDep, jDep).contains(caseArrive)) {
                                 this.plateau.deplacer(caseDepart, caseArrive);
-                                if (!this.plateau.contientDeuxRoi()) break;
                                 this.joueurActuel = 3 - this.joueurActuel;
                             } else {
                                 System.out.println("Déplacement illégal");
@@ -67,10 +66,6 @@ public class JeuEchec {
                 System.console().readLine();
             }
         }
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
-        this.plateau.affichage();
-        System.out.println("Le joueur " + this.joueurActuel + " à gagné, félicitations !");
     }
 
 }
