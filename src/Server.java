@@ -122,7 +122,13 @@ class Session extends Thread {
                     if (commande.length == 2) {
 
                     } else {
-                        out.println("ERR usage: load");
+                        out.println("ERR usage: load <idPartie>");
+                    }
+                } else if (commande[0].equals("help")) {
+                    if (commande.length == 1) {
+                        out.println("- register <numJoueur> <motDePasse>\n- connect <numJoueur> <motDePasse>\n- play <caseSource> <caseDestination>\n- leave\n- quit\n- replay\n- new\n- ask <numJoueur>\n- accept <numJoueur>\n- players\n- save\n- list_games\n- load <idPartie>");
+                    } else {
+                        out.println("ERR usage: help");
                     }
                 }
             }
