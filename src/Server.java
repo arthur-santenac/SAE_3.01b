@@ -1,5 +1,7 @@
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Server {
 
@@ -20,6 +22,7 @@ public class Server {
             e.printStackTrace();
         }
     }
+
 
     public static void main(String[] args) {
         new Server().mainServer(5556);
@@ -102,7 +105,11 @@ class Session extends Thread {
                     }
                 } else if (commande[0].equals("players")) {
                     if (commande.length == 1) {
+                        System.out.println("Ok\n");
+                        List<String> joueursCo = new ArrayList<>();
+                        for(String id: this.server.getConnectes){
 
+                        }
                     } else {
                         out.println("ERR usage: players");
                     }
