@@ -32,6 +32,10 @@ public class Server {
         return listeConnectes.containsKey(identifiant);
     }
 
+    public Map<String, Session> getListeConnectes() {
+        return listeConnectes;
+    }
+
     public static void main(String[] args) {
         new Server().mainServer(5556);
     }
@@ -47,6 +51,10 @@ class Session extends Thread {
     public Session(Server server, Socket socket) {
         this.server = server;
         this.socket = socket;
+    }
+
+    public PrintWriter getOut() {
+        return out;
     }
 
     @Override
@@ -103,7 +111,9 @@ class Session extends Thread {
                     }
                 } else if (commande[0].equals("ask")) {
                     if (commande.length == 2) {
-
+                        if (server.isConnected(commande[1])){
+                            server.getListeConnectes().get(commande[1]).getOut().println("bonjour");
+                        }
                     } else {
                         out.println("ERR usage: ask <numJoueur>");
                     }
