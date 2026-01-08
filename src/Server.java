@@ -2,10 +2,13 @@ import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Server {
 
     private final Object lock = new Object();
+    private Map<String, Session> listeConnectes = new HashMap<>();
 
     public void mainServer(int port) {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
@@ -23,6 +26,17 @@ public class Server {
         }
     }
 
+    public void ajouterConnecte(String identifiant, Session session) {
+        this.listeConnectes.put(identifiant, session);
+    }
+
+    public Map<String, Session> getListeConnectes() {
+        return listeConnectes;
+    }
+
+    public boolean isConnected(String identifiant) {
+        return listeConnectes.containsKey(identifiant);
+    }
 
     public static void main(String[] args) {
         new Server().mainServer(5556);
@@ -34,6 +48,7 @@ class Session extends Thread {
     private final Socket socket;
     private BufferedReader in;
     private PrintWriter out;
+    private String identifiant = null;
 
     public Session(Server server, Socket socket) {
         this.server = server;
@@ -57,7 +72,8 @@ class Session extends Thread {
                     }
                 } else if (commande[0].equals("connect")) {
                     if (commande.length == 3) {
-
+                        this.identifiant = commande[1];
+                        this.server.ajouterConnecte(identifiant, this);
                     } else {
                         out.println("ERR usage: connect <numJoueur> <motDePasse>");
                     }
@@ -106,10 +122,16 @@ class Session extends Thread {
                 } else if (commande[0].equals("players")) {
                     if (commande.length == 1) {
                         System.out.println("Ok\n");
-                        List<String> joueursCo = new ArrayList<>();
-                        for(String id: this.server.getConnectes){
-
+                        String joueursCo = "";
+                        for(String id: this.server.getListeConnectes().keySet()){
+                            joueursCo+= id+",";
                         }
+                        String[] res = joueursCo.split(",");
+                        for(String id :res){
+                            System.out.println(id+"\n");
+                        }
+                        
+
                     } else {
                         out.println("ERR usage: players");
                     }
