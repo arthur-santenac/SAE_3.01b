@@ -121,15 +121,11 @@ class Session extends Thread {
                     }
                 } else if (commande[0].equals("players")) {
                     if (commande.length == 1) {
-                        System.out.println("Ok\n");
-                        String joueursCo = "";
+                        String res ="\nListe des joueurs connectés: \n";
                         for(String id: this.server.getListeConnectes().keySet()){
-                            joueursCo+= id+",";
+                            res+= id+"\n";
                         }
-                        String[] res = joueursCo.split(",");
-                        for(String id :res){
-                            System.out.println(id+"\n");
-                        }
+                        out.println(res);
                         
 
                     } else {
