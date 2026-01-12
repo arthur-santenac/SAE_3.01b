@@ -13,16 +13,16 @@ public class Server {
     private String Fichier_JOUEURS = "./sauvegarde.json";
 
     public boolean registerPlayer(String login, String password) {
-        synchronized (lock) { 
+        synchronized (lock) {
             Map<String, String> players = chercherPlayers();
-            
+
             if (players.containsKey(login)) {
-                return false; 
+                return false;
             }
 
             players.put(login, password);
             savePlayers(players);
-            return true; 
+            return true;
         }
     }
 
@@ -57,7 +57,7 @@ public class Server {
         return map;
     }
 
-private void savePlayers(Map<String, String> players) {
+    private void savePlayers(Map<String, String> players) {
 
         try (FileWriter nvfichier = new FileWriter(Fichier_JOUEURS)) {
             nvfichier.write("{\n");
@@ -127,7 +127,6 @@ class Session extends Thread {
     private PrintWriter out;
     private String identifiant = null;
 
-
     public Session(Server server, Socket socket) {
         this.server = server;
         this.socket = socket;
@@ -151,12 +150,19 @@ class Session extends Thread {
                         String login = commande[1];
                         String mdp = commande[2];
 
-                        boolean succes = server.registerPlayer(login, mdp);
-
-                        if (succes) {
-                            out.println("OK");
+                        if (login.length() < 3 || login.length() > 10) {
+                            out.println("ERR Le nomJoueur doit contenir entre 3 et 10 caracteres");
+                        } else if (mdp.length() < 6) {
+                            out.println("ERR Le mot de passe doit contenir au moins 6 caracteres");
                         } else {
-                            out.println("ERR Le joueur " + login + " existe deja");
+
+                            boolean succes = server.registerPlayer(login, mdp);
+
+                            if (succes) {
+                                out.println("OK");
+                            } else {
+                                out.println("ERR Le joueur " + login + " existe deja");
+                            }
                         }
 
                     } else {
@@ -203,7 +209,7 @@ class Session extends Thread {
                     }
                 } else if (commande[0].equals("ask")) {
                     if (commande.length == 2) {
-                        if (server.isConnected(commande[1])){
+                        if (server.isConnected(commande[1])) {
                             server.faireDemandes(this.identifiant, commande[1]);
                             server.getListeConnectes().get(commande[1]).getOut().println(this.identifiant + " veut jouer avec toi ! Utilise la commande 'accept " + identifiant + "' pour accepter.");
                         }
@@ -214,7 +220,8 @@ class Session extends Thread {
                     if (commande.length == 2) {
                         if (server.getListeDemande().get(commande[1]).equals(identifiant)) {
                             out.println("La partie va commencer avec le joueur " + commande[1]);
-                            server.getListeConnectes().get(commande[1]).getOut().println("La partie va commencer avec le joueur " + identifiant);
+                            server.getListeConnectes().get(commande[1]).getOut()
+                                    .println("La partie va commencer avec le joueur " + identifiant);
                         }
                     } else {
                         out.println("ERR usage: accept <numJoueur>");
