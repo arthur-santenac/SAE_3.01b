@@ -99,6 +99,10 @@ public class Server {
         this.listeConnectes.put(identifiant, session);
     }
 
+    public void enleverConnecte(String identifiant) {
+        this.listeConnectes.remove(identifiant);
+    }
+
     public Map<String, Session> getListeConnectes() {
         return listeConnectes;
     }
@@ -126,6 +130,7 @@ class Session extends Thread {
     private BufferedReader in;
     private PrintWriter out;
     private String identifiant = null;
+    private String adversaire = null;
 
     public Session(Server server, Socket socket) {
         this.server = server;
@@ -185,13 +190,23 @@ class Session extends Thread {
                     }
                 } else if (commande[0].equals("leave")) {
                     if (commande.length == 1) {
-
+                        if (this.adversaire != null) {
+                                server.getListeConnectes().get(this.adversaire).getOut().println("INFO : Votre adversaire a abandonné. Vous avez gagné par forfait !");
+                                server.getListeConnectes().get(this.adversaire).adversaire = null;
+                            }
+                        out.println("OK Vous avez abandonné la partie.");
+                        this.adversaire = null;
                     } else {
                         out.println("ERR usage: leave");
                     }
                 } else if (commande[0].equals("quit")) {
                     if (commande.length == 1) {
-
+                        if (server.getListeConnectes().get(this.adversaire) != null) {
+                            server.getListeConnectes().get(this.adversaire).getOut().println("INFO: Votre adversaire a quitté. Vous avez gagné par forfait !");
+                            server.getListeConnectes().get(this.adversaire).adversaire = null;
+                        }
+                        server.enleverConnecte(this.identifiant);
+                        break;
                     } else {
                         out.println("ERR usage: quit");
                     }

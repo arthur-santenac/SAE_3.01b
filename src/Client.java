@@ -31,6 +31,10 @@ public class Client {
             while (!quitter && scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 out.println(line);
+
+                if (line.trim().equals("quit")) {
+                    quitter = true;
+                }
             }
             
         } catch (IOException e) {
