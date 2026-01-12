@@ -7,6 +7,7 @@ public class Server {
 
     private final Object lock = new Object();
     private Map<String, Session> listeConnectes = new HashMap<>();
+    private Map<String, String> listeDemande = new HashMap<>();
 
     public void mainServer(int port) {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
@@ -32,6 +33,14 @@ public class Server {
         return listeConnectes.containsKey(identifiant);
     }
 
+    public Map<String, Session> getListeConnectes() {
+        return listeConnectes;
+    }
+
+    public Map<String, String> getListeDemande() {
+        return listeDemande;
+    }
+
     public static void main(String[] args) {
         new Server().mainServer(5556);
     }
@@ -47,6 +56,10 @@ class Session extends Thread {
     public Session(Server server, Socket socket) {
         this.server = server;
         this.socket = socket;
+    }
+
+    public PrintWriter getOut() {
+        return out;
     }
 
     @Override
@@ -109,7 +122,10 @@ class Session extends Thread {
                     }
                 } else if (commande[0].equals("accept")) {
                     if (commande.length == 2) {
-
+                        if (server.getListeDemande().get(commande[1]).equals(identifiant)) {
+                            out.println("La partie va commencer avec le joueur " + commande[1]);
+                            server.getListeConnectes().get(commande[1]).getOut().println("La partie va commencer avec le joueur " + identifiant);
+                        }
                     } else {
                         out.println("ERR usage: accept <numJoueur>");
                     }
