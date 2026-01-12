@@ -123,7 +123,7 @@ class Session extends Thread {
                     if (commande.length == 2) {
                         if (server.isConnected(commande[1])){
                             server.faireDemandes(this.identifiant, commande[1]);
-                            server.getListeConnectes().get(commande[1]).getOut().println(this.identifiant + "veut jouer avec vous !");
+                            server.getListeConnectes().get(commande[1]).getOut().println(this.identifiant + " veut jouer avec toi ! Utilise la commande connect <id> pour accepter.");
                         }
                     } else {
                         out.println("ERR usage: ask <numJoueur>");
