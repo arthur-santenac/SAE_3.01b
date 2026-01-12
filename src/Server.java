@@ -1,7 +1,5 @@
 import java.io.*;
 import java.net.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,10 +35,6 @@ public class Server {
 
     public boolean isConnected(String identifiant) {
         return listeConnectes.containsKey(identifiant);
-    }
-
-    public Map<String, Session> getListeConnectes() {
-        return listeConnectes;
     }
 
     public void faireDemandes(String demandeur, String cible) {
