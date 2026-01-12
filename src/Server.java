@@ -26,6 +26,16 @@ public class Server {
         }
     }
 
+    public boolean verifieExist(String login, String password) {
+        synchronized (lock) {
+            Map<String, String> players = chercherPlayers();
+            if (players.containsKey(login)) {
+                return players.get(login).equals(password);
+            }
+            return false;
+        }
+    }
+
     private Map<String, String> chercherPlayers() {
         Map<String, String> map = new HashMap<>();
         File file = new File(Fichier_JOUEURS);
@@ -172,8 +182,21 @@ class Session extends Thread {
 
                 else if (commande[0].equals("connect")) {
                     if (commande.length == 3) {
-                        this.identifiant = commande[1];
-                        this.server.ajouterConnecte(identifiant, this);
+                        String login = commande[1];
+                        String mdp = commande[2];
+
+                        if (server.isConnected(login)) {
+                            out.println("ERR Le joueur " + login + " est deja connecte");
+                        } else if (server.verifieExist(login, mdp)) {
+                            this.identifiant = login;
+                            this.server.ajouterConnecte(identifiant, this);
+                            out.println("OK");
+                        }
+
+                        else {
+                            out.println("ERR Identifiant ou mot de passe incorrect");
+                        }
+
                     } else {
                         out.println("ERR usage: connect <numJoueur> <motDePasse>");
                     }
@@ -211,7 +234,9 @@ class Session extends Thread {
                     if (commande.length == 2) {
                         if (server.isConnected(commande[1])) {
                             server.faireDemandes(this.identifiant, commande[1]);
-                            server.getListeConnectes().get(commande[1]).getOut().println(this.identifiant + " veut jouer avec toi ! Utilise la commande 'accept " + identifiant + "' pour accepter.");
+                            server.getListeConnectes().get(commande[1]).getOut()
+                                    .println(this.identifiant + " veut jouer avec toi ! Utilise la commande 'accept "
+                                            + identifiant + "' pour accepter.");
                         }
                     } else {
                         out.println("ERR usage: ask <numJoueur>");
@@ -228,12 +253,11 @@ class Session extends Thread {
                     }
                 } else if (commande[0].equals("players")) {
                     if (commande.length == 1) {
-                        String res ="\nListe des joueurs connectés: \n";
-                        for(String id: this.server.getListeConnectes().keySet()){
-                            res+= id+"\n";
+                        String res = "\nListe des joueurs connectés: \n";
+                        for (String id : this.server.getListeConnectes().keySet()) {
+                            res += id + "\n";
                         }
                         out.println(res);
-                        
 
                     } else {
                         out.println("ERR usage: players");
