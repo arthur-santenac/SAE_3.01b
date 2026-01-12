@@ -12,7 +12,6 @@ public class Client {
             final BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             Scanner scanner = new Scanner(System.in)) {
-
             Thread listener = new Thread(new Runnable() {
                 @Override
                 public void run() {
