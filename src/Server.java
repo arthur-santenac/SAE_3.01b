@@ -99,12 +99,12 @@ public class Server {
         this.listeConnectes.put(identifiant, session);
     }
 
-    public boolean isConnected(String identifiant) {
-        return listeConnectes.containsKey(identifiant);
-    }
-
     public Map<String, Session> getListeConnectes() {
         return listeConnectes;
+    }
+
+    public boolean isConnected(String identifiant) {
+        return listeConnectes.containsKey(identifiant);
     }
 
     public void faireDemandes(String demandeur, String cible) {
@@ -211,9 +211,7 @@ class Session extends Thread {
                     if (commande.length == 2) {
                         if (server.isConnected(commande[1])) {
                             server.faireDemandes(this.identifiant, commande[1]);
-                            server.getListeConnectes().get(commande[1]).getOut()
-                                    .println(this.identifiant + " veut jouer avec toi ! Utilise la commande accept "
-                                            + commande[1] + " pour accepter.");
+                            server.getListeConnectes().get(commande[1]).getOut().println(this.identifiant + " veut jouer avec toi ! Utilise la commande 'accept " + identifiant + "' pour accepter.");
                         }
                     } else {
                         out.println("ERR usage: ask <numJoueur>");
@@ -230,6 +228,12 @@ class Session extends Thread {
                     }
                 } else if (commande[0].equals("players")) {
                     if (commande.length == 1) {
+                        String res ="\nListe des joueurs connectés: \n";
+                        for(String id: this.server.getListeConnectes().keySet()){
+                            res+= id+"\n";
+                        }
+                        out.println(res);
+                        
 
                     } else {
                         out.println("ERR usage: players");
