@@ -37,6 +37,10 @@ public class Server {
         return listeConnectes;
     }
 
+    public void faireDemandes(String demandeur, String cible) {
+        listeDemande.put(demandeur, cible);
+    }
+
     public Map<String, String> getListeDemande() {
         return listeDemande;
     }
@@ -52,6 +56,7 @@ class Session extends Thread {
     private BufferedReader in;
     private PrintWriter out;
     private String identifiant = null;
+
 
     public Session(Server server, Socket socket) {
         this.server = server;
@@ -116,7 +121,10 @@ class Session extends Thread {
                     }
                 } else if (commande[0].equals("ask")) {
                     if (commande.length == 2) {
-
+                        if (server.isConnected(commande[1])){
+                            server.faireDemandes(this.identifiant, commande[1]);
+                            server.getListeConnectes().get(commande[1]).getOut().println(this.identifiant + "veut jouer avec vous !");
+                        }
                     } else {
                         out.println("ERR usage: ask <numJoueur>");
                     }
