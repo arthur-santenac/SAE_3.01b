@@ -64,24 +64,43 @@ public class Plateau{
         return false;
     }
 
-    public void affichage(){
-        String res = "     A   B   C   D   E   F   G   H\n";
-        res += "   ┌───┬───┬───┬───┬───┬───┬───┬───┐\n";
-        for(int i = 0; i<8; i++){
-            res += " " + (8 - i) + " │";
-            for(int j = 0; j<8; j++){
-                Piece piece = this.terrain.get(i).get(j).getPiece();
-                if (piece == null) res += "   ";
-                else res += piece.toString();
-                res += "│";
+    public String affichage(boolean inverser){
+        String res;
+        if (!inverser) {
+            res = "     A   B   C   D   E   F   G   H\n";
+            res += "   ┌───┬───┬───┬───┬───┬───┬───┬───┐\n";
+            for(int i = 0; i<8; i++){
+                res += " " + (8 - i) + " │";
+                for(int j = 0; j<8; j++){
+                    Piece piece = this.terrain.get(i).get(j).getPiece();
+                    if (piece == null) res += "   ";
+                    else res += piece.toString();
+                    res += "│";
+                }
+                res += "\n";
+                if (i != 7) {
+                    res += "   ├───┼───┼───┼───┼───┼───┼───┼───┤\n";
+                }
             }
-            res += "\n";
-            if (i != 7) {
-                res += "   ├───┼───┼───┼───┼───┼───┼───┼───┤\n";
+        } else {
+            res = "     H   G   F   E   D   C   B   A\n";
+            res += "   ┌───┬───┬───┬───┬───┬───┬───┬───┐\n";
+            for(int i = 0; i<8; i++){
+                res += " " + (i + 1) + " │";
+                for(int j = 0; j<8; j++){
+                    Piece piece = this.terrain.get(7 - i).get(7 - j).getPiece();
+                    if (piece == null) res += "   ";
+                    else res += piece.toString();
+                    res += "│";
+                }
+                res += "\n";
+                if (i != 7) {
+                    res += "   ├───┼───┼───┼───┼───┼───┼───┼───┤\n";
+                }
             }
         }
         res += "   └───┴───┴───┴───┴───┴───┴───┴───┘";
-        System.out.println(res);
+        return res;
     }
 }
 

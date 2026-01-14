@@ -10,7 +10,6 @@ public class JeuEchec {
     public JeuEchec() {
         this.plateau = new Plateau();
         this.joueurActuel = 1;
-
         this.significationLettre = new HashMap<>();
         this.significationLettre.put('a', 0);
         this.significationLettre.put('b', 1);
@@ -22,14 +21,15 @@ public class JeuEchec {
         this.significationLettre.put('h', 7);
     }
 
-    public void lancerPartie() {
-        while (true) {
-            System.out.print("\033[H\033[2J");
-            System.out.flush();
-            this.plateau.affichage();
-            System.out.println("Au tour du joueur " + joueurActuel);
-            System.out.println("Entrez le coup :");
-            String coup = System.console().readLine();
+    public String affichage(boolean inverser) {
+        String res = this.plateau.affichage(inverser);
+        res += "\nAu joueur " + joueurActuel + " de jouer";
+        return res; 
+    }
+
+    public String jouer(int numJoueur, String caseDep, String caseArr) {
+        String coup = caseDep + caseArr;
+        if (numJoueur == joueurActuel) {
             if (coup.matches("[a-h][1-8][a-h][1-8]")) {
                 int jDep = this.significationLettre.get(coup.charAt(0));
                 int iDep = Character.getNumericValue(coup.charAt(1));
@@ -44,33 +44,30 @@ public class JeuEchec {
                         if (caseArrive.getPiece() == null || caseArrive.getPiece().getNumJoueur() != this.joueurActuel) {
                             if (caseDepart.getPiece().casesPossibles(this.plateau, 8 - iDep, jDep).contains(caseArrive)) {
                                 this.plateau.deplacer(caseDepart, caseArrive);
-                                if (!this.plateau.contientDeuxRoi()) break;
                                 this.joueurActuel = 3 - this.joueurActuel;
                             } else {
-                                System.out.println("Déplacement illégal");
-                                System.console().readLine();
+                                return "Déplacement illégal";
                             }
                         } else {
-                            System.out.println("Vous ne pouvez pas manger vos propres pièces");
-                            System.console().readLine();
+                            return "Vous ne pouvez pas manger vos propres pièces";
                         }
                     } else {
-                        System.out.println("Cette pièce ne vous appartient pas");
-                        System.console().readLine();
+                        return "Cette pièce ne vous appartient pas";
                     }
                 } else {
-                    System.out.println("Il n'y a pas de pièce a cet endroit");
-                    System.console().readLine();
+                    return "Il n'y a pas de pièce a cet endroit";
                 }
             } else {
-                System.out.println("Format invalide. Utilisez le bon format (ex: a2a4)");
-                System.console().readLine();
+                return "Format invalide. Utilisez le bon format (ex: a2a4)";
             }
+        } else {
+            return "Ce n'est pas a vous de joeur";
         }
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
-        this.plateau.affichage();
-        System.out.println("Le joueur " + this.joueurActuel + " à gagné, félicitations !");
+        return "";
+    }
+
+    public boolean estFini() {
+        return !this.plateau.contientDeuxRoi();
     }
 
 }
