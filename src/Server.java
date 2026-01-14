@@ -14,16 +14,26 @@ public class Server {
     private String Fichier_JOUEURS = "./sauvegarde.json";
 
     public boolean registerPlayer(String login, String password) {
-        synchronized (lock) { 
+        synchronized (lock) {
             Map<String, String> players = chercherPlayers();
-            
+
             if (players.containsKey(login)) {
-                return false; 
+                return false;
             }
 
             players.put(login, password);
             savePlayers(players);
-            return true; 
+            return true;
+        }
+    }
+
+    public boolean verifieExist(String login, String password) {
+        synchronized (lock) {
+            Map<String, String> players = chercherPlayers();
+            if (players.containsKey(login)) {
+                return players.get(login).equals(password);
+            }
+            return false;
         }
     }
 
@@ -186,12 +196,19 @@ class Session extends Thread {
                         String login = commande[1];
                         String mdp = commande[2];
 
-                        boolean succes = server.registerPlayer(login, mdp);
-
-                        if (succes) {
-                            out.println("OK");
+                        if (login.length() < 3 || login.length() > 10) {
+                            out.println("ERR Le nomJoueur doit contenir entre 3 et 10 caracteres");
+                        } else if (mdp.length() < 6) {
+                            out.println("ERR Le mot de passe doit contenir au moins 6 caracteres");
                         } else {
-                            out.println("ERR Le joueur " + login + " existe deja");
+
+                            boolean succes = server.registerPlayer(login, mdp);
+
+                            if (succes) {
+                                out.println("OK");
+                            } else {
+                                out.println("ERR Le joueur " + login + " existe deja");
+                            }
                         }
 
                     } else {
@@ -201,8 +218,21 @@ class Session extends Thread {
 
                 else if (commande[0].equals("connect")) {
                     if (commande.length == 3) {
-                        this.identifiant = commande[1];
-                        this.server.ajouterConnecte(identifiant, this);
+                        String login = commande[1];
+                        String mdp = commande[2];
+
+                        if (server.isConnected(login)) {
+                            out.println("ERR Le joueur " + login + " est deja connecte");
+                        } else if (server.verifieExist(login, mdp)) {
+                            this.identifiant = login;
+                            this.server.ajouterConnecte(identifiant, this);
+                            out.println("OK");
+                        }
+
+                        else {
+                            out.println("ERR Identifiant ou mot de passe incorrect");
+                        }
+
                     } else {
                         out.println("ERR usage: connect <numJoueur> <motDePasse>");
                     }
