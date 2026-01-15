@@ -10,7 +10,9 @@ public class Server {
     private Map<String, Session> listeConnectes = new HashMap<>();
     private Map<String, String> listeDemande = new HashMap<>();
     private Map<String, JeuEchec> listeJeuEnCours = new HashMap<>();
+    private Map<String, Session> listeJoueurAttente = new HashMap<>();
 
+    
     private String Fichier_JOUEURS = "./sauvegarde.json";
 
     public boolean registerPlayer(String login, String password) {
@@ -128,6 +130,14 @@ public class Server {
 
     public Map<String, JeuEchec> getListeJeuEnCours() {
         return listeJeuEnCours;
+    }
+
+    public void ajouterJoueurAttente(String identifiant, Session session) {
+        this.listeJoueurAttente.put(identifiant, session);
+    }
+
+    public Map<String, Session> getListeAttente() {
+        return this.listeJoueurAttente;
     }
 
     public static void main(String[] args) {
@@ -286,6 +296,12 @@ class Session extends Thread {
                     }
                 } else if (commande[0].equals("new")) {
                     if (commande.length == 1) {
+                        if(this.server.getListeAttente().isEmpty()){
+                            this.server.ajouterJoueurAttente(identifiant, this);
+                        }
+                        else{
+                            this.adversaire = this.server.getListeAttente().get()
+                        }
 
                     } else {
                         out.println("ERR usage: new");
