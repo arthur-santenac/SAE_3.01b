@@ -1,8 +1,11 @@
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.security.*;
+import java.security.spec.*;
+import javax.crypto.*;
+import javax.crypto.spec.SecretKeySpec;
+import java.util.Base64;
 
 public class Server {
 
@@ -12,7 +15,6 @@ public class Server {
     private Map<String, JeuEchec> listeJeuEnCours = new HashMap<>();
     private Map<String, Session> listeJoueurAttente = new HashMap<>();
 
-    
     private String Fichier_JOUEURS = "./sauvegarde.json";
 
     public boolean registerPlayer(String login, String password) {
@@ -65,13 +67,12 @@ public class Server {
                 }
             }
         } catch (IOException e) {
-            System.err.println("Erreur lecture JSON: " + e.getMessage());
+            System.err.println("Erreur lecture JSON : " + e.getMessage());
         }
         return map;
     }
 
     private void savePlayers(Map<String, String> players) {
-
         try (FileWriter nvfichier = new FileWriter(Fichier_JOUEURS)) {
             nvfichier.write("{\n");
 
@@ -88,7 +89,7 @@ public class Server {
             }
             nvfichier.write("}\n");
         } catch (IOException e) {
-            System.err.println("Erreur écriture JSON: " + e.getMessage());
+            System.err.println("Erreur écriture JSON : " + e.getMessage());
         }
     }
 
@@ -142,7 +143,6 @@ public class Server {
 
     public Map<String, Session> getListeAttente() {
         return this.listeJoueurAttente;
-    
     }
 
     public static void main(String[] args) {
@@ -158,35 +158,63 @@ class Session extends Thread {
     private String identifiant = null;
     private String adversaire = null;
     private int numJoueur = 0;
+    
+    private SecretKeySpec secretKey;
 
     public Session(Server server, Socket socket) {
         this.server = server;
         this.socket = socket;
     }
 
-    public PrintWriter getOut() {
-        return out;
+    public void envoyer(String message) {
+        try {
+            String messageChiffre = chiffrer(message);
+            out.println(messageChiffre);
+        } catch (Exception e) {
+            System.err.println("Erreur d'envoi chiffré : " + e.getMessage());
+        }
+    }
+
+    private String chiffrer(String messageClair) throws Exception {
+        Cipher chiffreur = Cipher.getInstance("AES");
+        chiffreur.init(Cipher.ENCRYPT_MODE, secretKey);
+        byte[] octetsChiffres = chiffreur.doFinal(messageClair.getBytes());
+        return Base64.getEncoder().encodeToString(octetsChiffres);
+    }
+
+    private String dechiffrer(String messageChiffre) throws Exception {
+        byte[] octetsChiffres = Base64.getDecoder().decode(messageChiffre);
+        Cipher dechiffreur = Cipher.getInstance("AES");
+        dechiffreur.init(Cipher.DECRYPT_MODE, secretKey);
+        byte[] octetsClairs = dechiffreur.doFinal(octetsChiffres);
+        return new String(octetsClairs);
     }
 
     public void afficherJeu(boolean inverser, boolean fini) {
         JeuEchec jeu = server.getListeJeuEnCours().get(identifiant);
         int id; if (inverser) id = 2; else id = 1;
-        out.println("\033[H\033[2J");
+        
+        envoyer("\033[H\033[2J");
         out.flush();
-        server.getListeConnectes().get(adversaire).getOut().println("\033[H\033[2J");
+        server.getListeConnectes().get(adversaire).envoyer("\033[H\033[2J");
         server.getListeConnectes().get(adversaire).getOut().flush();
+        
         if (!fini) {
-            out.println("Vous êtes en partie avec le joueur " + this.adversaire);
-            out.println("Vous êtes le joueur " + id);
-            server.getListeConnectes().get(adversaire).getOut().println("Vous êtes en partie avec le joueur " + identifiant);
-            server.getListeConnectes().get(adversaire).getOut().println("Vous êtes le joueur " + (3 - id));
+            envoyer("Vous êtes en partie avec le joueur " + this.adversaire);
+            envoyer("Vous êtes le joueur " + id);
+            server.getListeConnectes().get(adversaire).envoyer("Vous êtes en partie avec le joueur " + identifiant);
+            server.getListeConnectes().get(adversaire).envoyer("Vous êtes le joueur " + (3 - id));
         }
-        out.println(jeu.affichage(inverser));
-        server.getListeConnectes().get(adversaire).getOut().println(jeu.affichage(!inverser));
+        envoyer(jeu.affichage(inverser));
+        server.getListeConnectes().get(adversaire).envoyer(jeu.affichage(!inverser));
         if (fini) {
-            out.println("Félicitation vous avez gagné !");
-            server.getListeConnectes().get(adversaire).getOut().println("Dommage vous avez perdu.");
+            envoyer("Félicitation vous avez gagné !");
+            server.getListeConnectes().get(adversaire).envoyer("Dommage vous avez perdu.");
         }
+    }
+
+    public PrintWriter getOut() {
+        return out;
     }
 
     public void setAdversaire(String adversaire) {
@@ -202,9 +230,33 @@ class Session extends Thread {
         try {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
+
+            KeyPairGenerator kpg = KeyPairGenerator.getInstance("EC");
+            kpg.initialize(new ECGenParameterSpec("secp256r1"));
+            KeyPair myKeyPair = kpg.generateKeyPair();
+
+            String clientPublicKeyBase64 = in.readLine();
+            byte[] clientPublicKeyBytes = Base64.getDecoder().decode(clientPublicKeyBase64);
+            KeyFactory kf = KeyFactory.getInstance("EC");
+            PublicKey clientPublicKey = kf.generatePublic(new X509EncodedKeySpec(clientPublicKeyBytes));
+
+            byte[] myPublicKeyBytes = myKeyPair.getPublic().getEncoded();
+            String myPublicKeyBase64 = Base64.getEncoder().encodeToString(myPublicKeyBytes);
+            out.println(myPublicKeyBase64);
+
+            KeyAgreement ka = KeyAgreement.getInstance("ECDH");
+            ka.init(myKeyPair.getPrivate());
+            ka.doPhase(clientPublicKey, true);
+            byte[] sharedSecret = ka.generateSecret();
+
+            MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
+            byte[] keyBytes = Arrays.copyOf(sha256.digest(sharedSecret), 16);
+            secretKey = new SecretKeySpec(keyBytes, "AES");
+
             String line;
             while ((line = in.readLine()) != null) {
-                line = line.trim();
+                line = dechiffrer(line).trim();
+                
                 String[] commande = line.split("\\s+");
                 if (commande[0].equals("register")) {
                     if (commande.length == 3) {
@@ -212,22 +264,20 @@ class Session extends Thread {
                         String mdp = commande[2];
 
                         if (login.length() < 3 || login.length() > 10) {
-                            out.println("ERR Le nomJoueur doit contenir entre 3 et 10 caracteres");
+                            envoyer("ERR Le nomJoueur doit contenir entre 3 et 10 caracteres");
                         } else if (mdp.length() < 6) {
-                            out.println("ERR Le mot de passe doit contenir au moins 6 caracteres");
+                            envoyer("ERR Le mot de passe doit contenir au moins 6 caracteres");
                         } else {
-
                             boolean succes = server.registerPlayer(login, mdp);
-
                             if (succes) {
-                                out.println("OK");
+                                envoyer("OK");
                             } else {
-                                out.println("ERR Le joueur " + login + " existe deja");
+                                envoyer("ERR Le joueur " + login + " existe deja");
                             }
                         }
 
                     } else {
-                        out.println("ERR usage: register <numJoueur> <motDePasse>");
+                        envoyer("ERR usage : register <numJoueur> <motDePasse>");
                     }
                 }
 
@@ -237,56 +287,56 @@ class Session extends Thread {
                         String mdp = commande[2];
 
                         if (server.isConnected(login)) {
-                            out.println("ERR Le joueur " + login + " est deja connecte");
+                            envoyer("ERR Le joueur " + login + " est deja connecte");
                         } else if (server.verifieExist(login, mdp)) {
                             this.identifiant = login;
                             this.server.ajouterConnecte(identifiant, this);
-                            out.println("OK");
+                            envoyer("OK");
                         }
 
                         else {
-                            out.println("ERR Identifiant ou mot de passe incorrect");
+                            envoyer("ERR Identifiant ou mot de passe incorrect");
                         }
 
                     } else {
-                        out.println("ERR usage: connect <numJoueur> <motDePasse>");
+                        envoyer("ERR usage : connect <numJoueur> <motDePasse>");
                     }
                 } else if (commande[0].equals("play")) {
                     if (commande.length == 3) {
                         if (adversaire != null && server.getListeJeuEnCours().containsKey(identifiant)) {
-                            out.println(server.getListeJeuEnCours().get(identifiant).jouer(numJoueur, commande[1], commande[2]));
+                            envoyer(server.getListeJeuEnCours().get(identifiant).jouer(numJoueur, commande[1], commande[2]));
                             boolean fini = false; if (server.getListeJeuEnCours().get(identifiant).estFini()) fini = true;
                             if (numJoueur == 1) afficherJeu(false, fini); else afficherJeu(true, fini);
                             if (fini) {
                                 server.getListeJeuEnCours().remove(identifiant); server.getListeJeuEnCours().remove(adversaire);
                             }
                         } else {
-                            out.println("ERR vous devez être en partie pour jouer");
+                            envoyer("ERR vous devez être en partie pour jouer");
                         }
                     } else {
-                        out.println("ERR usage: play <caseSource> <caseDestination>");
+                        envoyer("ERR usage : play <caseSource> <caseDestination>");
                     }
                 } else if (commande[0].equals("leave")) {
                     if (commande.length == 1) {
-                        if (this.adversaire != null) {
-                                server.getListeConnectes().get(this.adversaire).getOut().println("INFO : Votre adversaire a abandonné. Vous avez gagné par forfait !");
-                                server.getListeConnectes().get(this.adversaire).adversaire = null;
-                            }
-                        out.println("OK Vous avez abandonné la partie.");
+                         if (this.adversaire != null && server.getListeConnectes().containsKey(this.adversaire)) {
+                            server.getListeConnectes().get(this.adversaire).envoyer("INFO : Votre adversaire a abandonné. Vous avez gagné par forfait !");
+                            server.getListeConnectes().get(this.adversaire).adversaire = null;
+                        }
+                        envoyer("OK Vous avez abandonné la partie.");
                         this.adversaire = null;
                     } else {
-                        out.println("ERR usage: leave");
+                        envoyer("ERR usage : leave");
                     }
                 } else if (commande[0].equals("quit")) {
                     if (commande.length == 1) {
-                        if (server.getListeConnectes().get(this.adversaire) != null) {
-                            server.getListeConnectes().get(this.adversaire).getOut().println("INFO: Votre adversaire a quitté. Vous avez gagné par forfait !");
+                         if (this.adversaire != null && server.getListeConnectes().containsKey(this.adversaire)) {
+                            server.getListeConnectes().get(this.adversaire).envoyer("INFO: Votre adversaire a quitté. Vous avez gagné par forfait !");
                             server.getListeConnectes().get(this.adversaire).adversaire = null;
                         }
                         server.enleverConnecte(this.identifiant);
                         break;
                     } else {
-                        out.println("ERR usage: quit");
+                        envoyer("ERR usage : quit");
                     }
                 } else if (commande[0].equals("replay")) {
                     if (commande.length == 1) {
@@ -301,23 +351,24 @@ class Session extends Thread {
                                 afficherJeu(false, false);
                             } else {
                                 server.getListeDemande().put(this.identifiant, adversaire);
-                                server.getListeConnectes().get(adversaire).getOut().println(identifiant + " a envie de rejouer avec vous\nutilisez replay pour relancé une partie");
+                                server.getListeConnectes().get(adversaire).envoyer(identifiant + " a envie de rejouer avec vous\nutilisez replay pour relancé une partie");
                             }
                         } else {
-                            out.println("ERR vous devez être en fin de partie pour rejouer");
+                            envoyer("ERR vous devez être en fin de partie pour rejouer");
                         }
                     } else {
-                        out.println("ERR usage: replay");
+                        envoyer("ERR usage : replay");
                     }
                 } else if (commande[0].equals("new")) {
                     if (commande.length == 1) {
                         if(this.server.getListeAttente().isEmpty()){
                             this.server.ajouterJoueurAttente(identifiant, this);
+                            envoyer("Vous êtes en file d'attente...");
                         }
                         else{
                             this.adversaire = this.server.getListeAttente().keySet().iterator().next();
                             if (this.adversaire.equals(this.identifiant)) {
-                                out.println("Vous êtes déjà dans la file d'attente.");
+                                envoyer("Vous êtes déjà dans la file d'attente.");
                             }
                             else {
                                 Session sessionAdversaire = this.server.getListeAttente().get(this.adversaire);
@@ -332,7 +383,7 @@ class Session extends Thread {
                             }
                         }
                     } else {
-                        out.println("ERR usage: new");
+                        envoyer("ERR usage : new");
                     }
                 } else if (commande[0].equals("ask")) {
                     if (commande.length == 2) {
@@ -340,19 +391,19 @@ class Session extends Thread {
                             if (!identifiant.equals(commande[1])) {
                                 if (server.isConnected(commande[1])){
                                     server.faireDemandes(this.identifiant, commande[1]);
-                                    out.println("OK");
-                                    server.getListeConnectes().get(commande[1]).getOut().println(this.identifiant + " veut jouer avec toi ! Utilise la commande 'accept " + identifiant + "' pour accepter.");
+                                    envoyer("OK");
+                                    server.getListeConnectes().get(commande[1]).envoyer(this.identifiant + " veut jouer avec toi ! Utilise la commande 'accept " + identifiant + "' pour accepter.");
                                 } else {
-                                    out.println("ERR ce joueur n'est pas connecté");
+                                    envoyer("ERR ce joueur n'est pas connecté");
                                 }
                             } else {
-                                out.println("ERR vous ne pouvez pas jouer contre vous même");
+                                envoyer("ERR vous ne pouvez pas jouer contre vous même");
                             }
                         } else {
-                            out.println("ERR vous n'êtes pas connectés");
+                            envoyer("ERR vous n'êtes pas connectés");
                         }
                     } else {
-                        out.println("ERR usage: ask <numJoueur>");
+                        envoyer("ERR usage : ask <numJoueur>");
                     }
                 } else if (commande[0].equals("accept")) {
                     if (commande.length == 2) {
@@ -367,10 +418,10 @@ class Session extends Thread {
                             server.getListeConnectes().get(commande[1]).setNumJoueur(2);
                             afficherJeu(false, false);
                         } else {
-                            out.println("ERR ce joueur ne vous a pas demandé en duel");
+                            envoyer("ERR ce joueur ne vous a pas demandé en duel");
                         }
                     } else {
-                        out.println("ERR usage: accept <numJoueur>");
+                        envoyer("ERR usage : accept <numJoueur>");
                     }
                 } else if (commande[0].equals("players")) {
                     if (commande.length == 1) {
@@ -380,39 +431,38 @@ class Session extends Thread {
                                 res+= "\n" + id;
                             }
                         }
-                        out.println(res);
+                        envoyer(res);
                     } else {
-                        out.println("ERR usage: players");
+                        envoyer("ERR usage : players");
                     }
                 } else if (commande[0].equals("save")) {
                     if (commande.length == 1) {
 
                     } else {
-                        out.println("ERR usage: save");
+                        envoyer("ERR usage : save");
                     }
                 } else if (commande[0].equals("list_games")) {
                     if (commande.length == 1) {
 
                     } else {
-                        out.println("ERR usage: list_games");
+                        envoyer("ERR usage : list_games");
                     }
                 } else if (commande[0].equals("load")) {
                     if (commande.length == 2) {
 
                     } else {
-                        out.println("ERR usage: load <idPartie>");
+                        envoyer("ERR usage : load <idPartie>");
                     }
                 } else if (commande[0].equals("help")) {
                     if (commande.length == 1) {
-                        out.println(
-                                "- register <numJoueur> <motDePasse>\n- connect <numJoueur> <motDePasse>\n- play <caseSource> <caseDestination>\n- leave\n- quit\n- replay\n- new\n- ask <numJoueur>\n- accept <numJoueur>\n- players\n- save\n- list_games\n- load <idPartie>");
+                        envoyer("- register <numJoueur> <motDePasse>\n- connect <numJoueur> <motDePasse>\n- play <caseSource> <caseDestination>\n- leave\n- quit\n- replay\n- new\n- ask <numJoueur>\n- accept <numJoueur>\n- players\n- save\n- list_games\n- load <idPartie>");
                     } else {
-                        out.println("ERR usage: help");
+                        envoyer("ERR usage : help");
                     }
                 }
             }
-        } catch (IOException e) {
-
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             try {
                 socket.close();
@@ -421,5 +471,4 @@ class Session extends Thread {
             }
         }
     }
-
 }

@@ -52,7 +52,7 @@ public class Client {
                         String encryptedMessage;
                         while ((encryptedMessage = in.readLine()) != null) {
                             String decryptedMessage = decrypt(encryptedMessage);
-                            System.out.println("Serveur > " + decryptedMessage);
+                            System.out.println(decryptedMessage);
                         }
                     } catch (Exception e) {
                         System.err.println("Connexion interrompue.");
@@ -60,13 +60,15 @@ public class Client {
                 }
             });
             listener.start();
-
             boolean quitter = false;
             while (!quitter && scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 try {
                     String encryptedLine = encrypt(line);
                     out.println(encryptedLine);
+                    if (line.trim().equals("quit")) {
+                        quitter = true;
+                    }
                 } catch (Exception e) {
                     System.err.println("Erreur de chiffrement : " + e.getMessage());
                 }
