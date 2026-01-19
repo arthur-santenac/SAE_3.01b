@@ -10,6 +10,9 @@ public class Server {
     private Map<String, Session> listeConnectes = new HashMap<>();
     private Map<String, String> listeDemande = new HashMap<>();
 
+    private Map<String, PartieInfo> parties = new HashMap<>(); // ID Partie -> Info
+    private Map<String, String> joueurEnJeu = new HashMap<>(); // Pseudo Joueur -> ID Partie
+
     private String Fichier_JOUEURS = "./sauvegarde.json";
 
     public boolean registerPlayer(String login, String password) {
@@ -24,6 +27,14 @@ public class Server {
             savePlayers(players);
             return true;
         }
+    }
+
+    public Map<String, PartieInfo> getParties() {
+        return parties;
+    }
+
+    public Map<String, String> getJoueurEnJeu() {
+        return joueurEnJeu;
     }
 
     public boolean verifieExist(String login, String password) {
@@ -200,8 +211,39 @@ class Session extends Thread {
                     } else {
                         out.println("ERR usage: connect <numJoueur> <motDePasse>");
                     }
-                } else if (commande[0].equals("play")) {
-                    if (commande.length == 3) {
+                }
+                else if (commande[0].equals("play")) {
+                    if (commande.length == 3) { 
+                        String coupJoue = commande[1] + commande[2]; 
+
+
+                        String idPartie = server.getJoueurEnJeu().get(this.identifiant);
+
+                        if (idPartie != null) {
+                            PartieInfo partie = server.getParties().get(idPartie);
+
+                            if (partie.getJoueurAuTrait().equals(this.identifiant)) {
+
+
+                                partie.ajouterCoup(coupJoue);
+
+                                out.println("OK Coup enregistré : " + coupJoue);
+
+                                String adversaire = (this.identifiant.equals(partie.getPseudoBlanc()))
+                                        ? partie.getPseudoNoir()
+                                        : partie.getPseudoBlanc();
+                                Session sessionAdverse = server.getListeConnectes().get(adversaire);
+                                if (sessionAdverse != null) {
+                                    sessionAdverse.getOut().println("COUP " + coupJoue); 
+                                    sessionAdverse.getOut().println("C'est à votre tour.");
+                                }
+
+                            } else {
+                                out.println("ERR Ce n'est pas votre tour !");
+                            }
+                        } else {
+                            out.println("ERR Vous n'êtes pas dans une partie.");
+                        }
 
                     } else {
                         out.println("ERR usage: play <caseSource> <caseDestination>");
@@ -243,10 +285,26 @@ class Session extends Thread {
                     }
                 } else if (commande[0].equals("accept")) {
                     if (commande.length == 2) {
-                        if (server.getListeDemande().get(commande[1]).equals(identifiant)) {
-                            out.println("La partie va commencer avec le joueur " + commande[1]);
-                            server.getListeConnectes().get(commande[1]).getOut()
-                                    .println("La partie va commencer avec le joueur " + identifiant);
+                        String demandeur = commande[1];
+                        String accepteur = this.identifiant;
+
+                        if (server.getListeDemande().get(demandeur) != null &&
+                                server.getListeDemande().get(demandeur).equals(accepteur)) {
+
+                            PartieInfo nouvellePartie = new PartieInfo(demandeur, accepteur);
+
+                            server.getParties().put(nouvellePartie.getId(), nouvellePartie);
+
+                            server.getJoueurEnJeu().put(demandeur, nouvellePartie.getId());
+                            server.getJoueurEnJeu().put(accepteur, nouvellePartie.getId());
+
+                            out.println(
+                                    "La partie commence ! ID: " + nouvellePartie.getId() + ". Vous êtes les Noirs.");
+                            server.getListeConnectes().get(demandeur).getOut()
+                                    .println("La partie commence ! ID: " + nouvellePartie.getId()
+                                            + ". Vous êtes les Blancs (à vous de jouer).");
+
+                            server.getListeDemande().remove(demandeur);
                         }
                     } else {
                         out.println("ERR usage: accept <numJoueur>");
