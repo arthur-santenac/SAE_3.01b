@@ -10,7 +10,9 @@ public class Server {
     private Map<String, Session> listeConnectes = new HashMap<>();
     private Map<String, String> listeDemande = new HashMap<>();
     private Map<String, JeuEchec> listeJeuEnCours = new HashMap<>();
+    private Map<String, Session> listeJoueurAttente = new HashMap<>();
 
+    
     private String Fichier_JOUEURS = "./sauvegarde.json";
 
     public boolean registerPlayer(String login, String password) {
@@ -132,6 +134,15 @@ public class Server {
 
     public Map<String, JeuEchec> getListeJeuEnCours() {
         return listeJeuEnCours;
+    }
+
+    public void ajouterJoueurAttente(String identifiant, Session session) {
+        this.listeJoueurAttente.put(identifiant, session);
+    }
+
+    public Map<String, Session> getListeAttente() {
+        return this.listeJoueurAttente;
+    
     }
 
     public static void main(String[] args) {
@@ -300,7 +311,26 @@ class Session extends Thread {
                     }
                 } else if (commande[0].equals("new")) {
                     if (commande.length == 1) {
-
+                        if(this.server.getListeAttente().isEmpty()){
+                            this.server.ajouterJoueurAttente(identifiant, this);
+                        }
+                        else{
+                            this.adversaire = this.server.getListeAttente().keySet().iterator().next();
+                            if (this.adversaire.equals(this.identifiant)) {
+                                out.println("Vous êtes déjà dans la file d'attente.");
+                            }
+                            else {
+                                Session sessionAdversaire = this.server.getListeAttente().get(this.adversaire);
+                                this.server.getListeAttente().remove(this.adversaire);
+                                JeuEchec nouveauJeu = new JeuEchec();
+                                this.server.getListeJeuEnCours().put(this.identifiant, nouveauJeu);
+                                this.server.getListeJeuEnCours().put(this.adversaire, nouveauJeu);
+                                sessionAdversaire.setAdversaire(this.identifiant);
+                                sessionAdversaire.setNumJoueur(1);
+                                this.numJoueur = 2;
+                                afficherJeu(true, false);
+                            }
+                        }
                     } else {
                         out.println("ERR usage: new");
                     }
