@@ -49,10 +49,9 @@ public class Client {
                 @Override
                 public void run() {
                     try {
-                        String encryptedMessage;
-                        while ((encryptedMessage = in.readLine()) != null) {
-                            String decryptedMessage = decrypt(encryptedMessage);
-                            System.out.println(decryptedMessage);
+                        String message;
+                        while ((message = in.readLine()) != null) {
+                            System.out.println(dechiffrer(message));
                         }
                     } catch (Exception e) {
                         System.err.println("Connexion interrompue.");
@@ -64,8 +63,7 @@ public class Client {
             while (!quitter && scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 try {
-                    String encryptedLine = encrypt(line);
-                    out.println(encryptedLine);
+                    out.println(chiffrer(line));
                     if (line.trim().equals("quit")) {
                         quitter = true;
                     }
@@ -80,14 +78,14 @@ public class Client {
         }
     }
 
-    private static String encrypt(String data) throws Exception {
+    private static String chiffrer(String data) throws Exception {
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.ENCRYPT_MODE, secretKey);
         byte[] encryptedBytes = cipher.doFinal(data.getBytes());
         return Base64.getEncoder().encodeToString(encryptedBytes);
     }
 
-    private static String decrypt(String encryptedDataBase64) throws Exception {
+    private static String dechiffrer(String encryptedDataBase64) throws Exception {
         byte[] encryptedBytes = Base64.getDecoder().decode(encryptedDataBase64);
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.DECRYPT_MODE, secretKey);
