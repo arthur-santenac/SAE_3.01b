@@ -453,9 +453,19 @@ class Session extends Thread {
                     } else {
                         envoyer("ERR usage : load <idPartie>");
                     }
+                } else if (commande[0].equals("promote")) {
+                    if (commande.length == 3) {
+                        if (adversaire != null && server.getListeJeuEnCours().containsKey(identifiant)) {
+                            envoyer(server.getListeJeuEnCours().get(identifiant).promote(commande[1], commande[2], numJoueur));
+                        } else {
+                            envoyer("ERR vous devez être en partie pour indiquer une promotion");
+                        }
+                    } else {
+                        envoyer("ERR usage : promote <caseSrc> <newPiece>");
+                    }
                 } else if (commande[0].equals("help")) {
                     if (commande.length == 1) {
-                        envoyer("- register <numJoueur> <motDePasse>\n- connect <numJoueur> <motDePasse>\n- play <caseSource> <caseDestination>\n- leave\n- quit\n- replay\n- new\n- ask <numJoueur>\n- accept <numJoueur>\n- players\n- save\n- list_games\n- load <idPartie>");
+                        envoyer("- register <numJoueur> <motDePasse>\n- connect <numJoueur> <motDePasse>\n- play <caseSource> <caseDestination>\n- leave\n- quit\n- replay\n- new\n- ask <numJoueur>\n- accept <numJoueur>\n- players\n- save\n- list_games\n- load <idPartie>\n- promote <caseSrc> <newPiece>");
                     } else {
                         envoyer("ERR usage : help");
                     }

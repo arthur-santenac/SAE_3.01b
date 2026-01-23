@@ -3,6 +3,7 @@ import java.util.List;
 public abstract class Piece {
     protected String img;
     protected int numJoueur;
+    public String promoteP = "";
 
     public Piece(String img, int numJoueur) {
         this.img = img;

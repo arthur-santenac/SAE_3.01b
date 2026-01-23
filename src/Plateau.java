@@ -48,8 +48,20 @@ public class Plateau{
         return this.terrain;
     }
 
-    public void deplacer(Case caseDepart, Case caseArrive) {
-        caseArrive.setPieceCourante(caseDepart.getPiece());
+    public void deplacer(Case caseDepart, Case caseArrive, boolean promotion, int numJoueur) {
+        if (promotion) {
+            if (caseDepart.getPiece().promoteP.equals("q")) {
+                caseArrive.setPieceCourante(new Dame(numJoueur));
+            } else if (caseDepart.getPiece().promoteP.equals("r")) {
+                caseArrive.setPieceCourante(new Tour(numJoueur));
+            } else if (caseDepart.getPiece().promoteP.equals("b")) {
+                caseArrive.setPieceCourante(new Fou(numJoueur));
+            } else if (caseDepart.getPiece().promoteP.equals("k")) {
+                caseArrive.setPieceCourante(new Cavalier(numJoueur));
+            } else {
+                caseArrive.setPieceCourante(caseDepart.getPiece());
+            }
+        } else caseArrive.setPieceCourante(caseDepart.getPiece());
         caseDepart.setPieceCourante(null);
     }
 

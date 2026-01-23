@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,15 +36,14 @@ public class JeuEchec {
                 int iDep = Character.getNumericValue(coup.charAt(1));
                 int jArr = this.significationLettre.get(coup.charAt(2));
                 int iArr =  Character.getNumericValue(coup.charAt(3));
-                Case caseDepart;
-                Case caseArrive;
-                caseDepart = this.plateau.getTerrain().get(8 - iDep).get(jDep);
-                caseArrive = this.plateau.getTerrain().get(8 - iArr).get(jArr);
+                Case caseDepart = this.plateau.getTerrain().get(8 - iDep).get(jDep);
+                Case caseArrive = this.plateau.getTerrain().get(8 - iArr).get(jArr);
                 if (caseDepart.getPiece() != null) {
                     if (caseDepart.getPiece().getNumJoueur() == this.joueurActuel) {
                         if (caseArrive.getPiece() == null || caseArrive.getPiece().getNumJoueur() != this.joueurActuel) {
                             if (caseDepart.getPiece().casesPossibles(this.plateau, 8 - iDep, jDep).contains(caseArrive)) {
-                                this.plateau.deplacer(caseDepart, caseArrive);
+                                if (coup.charAt(3) == '1' || coup.charAt(3) == '8') this.plateau.deplacer(caseDepart, caseArrive, true, numJoueur);
+                                else this.plateau.deplacer(caseDepart, caseArrive, false, numJoueur);
                                 this.joueurActuel = 3 - this.joueurActuel;
                             } else {
                                 return "Déplacement illégal";
@@ -55,19 +55,47 @@ public class JeuEchec {
                         return "Cette pièce ne vous appartient pas";
                     }
                 } else {
-                    return "Il n'y a pas de pièce a cet endroit";
+                    return "Il n'y a pas de pièce à cet endroit";
                 }
             } else {
                 return "Format invalide. Utilisez le bon format (ex: a2a4)";
             }
         } else {
-            return "Ce n'est pas a vous de joeur";
+            return "Ce n'est pas a vous de jouer";
         }
         return "";
     }
 
     public boolean estFini() {
         return !this.plateau.contientDeuxRoi();
+    }
+
+    public String promote(String caseSrc, String piece, int numJoueur) {
+        if (numJoueur == joueurActuel) {
+            if (caseSrc.matches("[a-h][1-8]")) {
+                int jDep = this.significationLettre.get(caseSrc.charAt(0));
+                int iDep = Character.getNumericValue(caseSrc.charAt(1));
+                Case caseDepart = this.plateau.getTerrain().get(8 - iDep).get(jDep);
+                if (caseDepart.getPiece() != null && caseDepart.getPiece() instanceof Pion) {
+                    if (Arrays.asList("q", "r", "b", "k").contains(piece)) {
+                        if (caseDepart.getPiece().getNumJoueur() == this.joueurActuel) {
+                            caseDepart.getPiece().promoteP = piece;
+                        } else {
+                            return "Cette pièce ne vous appartient pas";
+                        }
+                    } else {
+                        return "Vous pouvez seulement faire une promotion en q, r, b, ou k";
+                    }
+                } else {
+                    return "Il n'y a pas de pièce à cet endroit ou ce n'est pas un pion";
+                }
+            } else {
+                return "Format invalide. Utilisez le bon format (ex: a2)";
+            }
+        } else {
+            return "Ce n'est pas a vous de jouer";
+        }
+        return "OK";
     }
 
 }

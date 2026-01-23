@@ -3,7 +3,7 @@ import java.util.List;
 
 public class Pion extends Piece {
 
-    boolean dejaJouer;
+    private boolean dejaJouer;
     
     public Pion(int numJoueur) {
         super("♙", numJoueur);
