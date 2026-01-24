@@ -7,20 +7,20 @@ public class PartieInfo {
     private String id;
     private String pseudoBlanc;
     private String pseudoNoir;
-    private String attributionCouleurs; // Ex: "Random" ou défini par le défi
+    private String attributionCouleurs;
     private String date;
-    private String resultat; // "En cours", "1-0", "0-1", "1/2-1/2"
-    private String joueurAuTrait; // Pseudo du joueur qui doit jouer
+    private String resultat;
+    private String joueurAuTrait;
     private List<String> listeCoups;
 
     public PartieInfo(String pseudoBlanc, String pseudoNoir) {
-        this.id = UUID.randomUUID().toString(); // Génère un ID unique
+        this.id = UUID.randomUUID().toString();
         this.pseudoBlanc = pseudoBlanc;
         this.pseudoNoir = pseudoNoir;
         this.attributionCouleurs = "Blanc: " + pseudoBlanc + ", Noir: " + pseudoNoir;
         this.date = new Date().toString();
         this.resultat = "En cours";
-        this.joueurAuTrait = pseudoBlanc; // Les blancs commencent toujours
+        this.joueurAuTrait = pseudoBlanc;
         this.listeCoups = new ArrayList<>();
     }
 
@@ -39,13 +39,38 @@ public class PartieInfo {
 
     public void terminerPartie(String resultat) {
         this.resultat = resultat;
-        this.joueurAuTrait = "Aucun"; // La partie est finie
+        this.joueurAuTrait = "Aucun";
     }
 
-    // Getters utiles pour le serveur
-    public String getId() { return id; }
-    public String getJoueurAuTrait() { return joueurAuTrait; }
-    public String getPseudoBlanc() { return pseudoBlanc; }
-    public String getPseudoNoir() { return pseudoNoir; }
-    public String getResultat() { return resultat; }
+    public String getId() {
+        return id;
+    }
+
+    public String getJoueurAuTrait() {
+        return joueurAuTrait;
+    }
+
+    public String getPseudoBlanc() {
+        return pseudoBlanc;
+    }
+
+    public String getPseudoNoir() {
+        return pseudoNoir;
+    }
+
+    public String getResultat() {
+        return resultat;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public String getAttributionCouleurs() {
+        return attributionCouleurs;
+    }
+
+    public List<String> getListeCoups() {
+        return listeCoups;
+    }
 }

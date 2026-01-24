@@ -1,8 +1,6 @@
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Server {
 
@@ -139,6 +137,44 @@ public class Server {
     public static void main(String[] args) {
         new Server().mainServer(5556);
     }
+
+    public boolean sauvegarderPartie(PartieInfo partie) {
+
+        File file = new File("./parties.json");
+        StringBuilder sb = new StringBuilder();
+        sb.append("{\n");
+        sb.append("  \"id\": \"").append(partie.getId()).append("\",\n");
+        sb.append("  \"pseudoBlanc\": \"").append(partie.getPseudoBlanc()).append("\",\n");
+        sb.append("  \"pseudoNoir\": \"").append(partie.getPseudoNoir()).append("\",\n");
+        sb.append("  \"attributionCouleurs\": \"").append(partie.getAttributionCouleurs()).append("\",\n");
+        sb.append("  \"date\": \"").append(partie.getDate()).append("\",\n");
+
+        if ("En cours".equals(partie.getResultat())) {
+            sb.append("  \"statut\": \"En cours\",\n");
+            sb.append("  \"joueurAuTrait\": \"").append(partie.getJoueurAuTrait()).append("\",\n");
+        } else {
+            sb.append("  \"statut\": \"Terminée\",\n");
+            sb.append("  \"resultat\": \"").append(partie.getResultat()).append("\",\n");
+        }
+
+        sb.append("  \"coups\": [");
+        List<String> coups = partie.getListeCoups();
+        for (int i = 0; i < coups.size(); i++) {
+            sb.append("\"").append(coups.get(i)).append("\"");
+            if (i < coups.size() - 1)
+                sb.append(", ");
+        }
+        sb.append("]\n");
+        sb.append("}\n");
+
+        try (FileWriter writer = new FileWriter(file, true)) {
+            writer.write(sb.toString());
+            return true;
+        } catch (IOException e) {
+            System.err.println("Erreur sauvegarde partie: " + e.getMessage());
+            return false;
+        }
+    }
 }
 
 class Session extends Thread {
@@ -211,11 +247,9 @@ class Session extends Thread {
                     } else {
                         out.println("ERR usage: connect <numJoueur> <motDePasse>");
                     }
-                }
-                else if (commande[0].equals("play")) {
-                    if (commande.length == 3) { 
-                        String coupJoue = commande[1] + commande[2]; 
-
+                } else if (commande[0].equals("play")) {
+                    if (commande.length == 3) {
+                        String coupJoue = commande[1] + commande[2];
 
                         String idPartie = server.getJoueurEnJeu().get(this.identifiant);
 
@@ -223,7 +257,6 @@ class Session extends Thread {
                             PartieInfo partie = server.getParties().get(idPartie);
 
                             if (partie.getJoueurAuTrait().equals(this.identifiant)) {
-
 
                                 partie.ajouterCoup(coupJoue);
 
@@ -234,7 +267,7 @@ class Session extends Thread {
                                         : partie.getPseudoBlanc();
                                 Session sessionAdverse = server.getListeConnectes().get(adversaire);
                                 if (sessionAdverse != null) {
-                                    sessionAdverse.getOut().println("COUP " + coupJoue); 
+                                    sessionAdverse.getOut().println("COUP " + coupJoue);
                                     sessionAdverse.getOut().println("C'est à votre tour.");
                                 }
 
@@ -323,6 +356,27 @@ class Session extends Thread {
                 } else if (commande[0].equals("save")) {
                     if (commande.length == 1) {
 
+                        String idPartie = server.getJoueurEnJeu().get(this.identifiant);
+
+                        if (idPartie != null) {
+
+                            PartieInfo laPartie = server.getParties().get(idPartie);
+
+                            if (laPartie != null) {
+
+                                boolean succes = server.sauvegarderPartie(laPartie);
+
+                                if (succes) {
+                                    out.println("OK");
+                                } else {
+                                    out.println("ERR Problème lors de l'écriture du fichier");
+                                }
+                            } else {
+                                out.println("ERR Partie introuvable (incohérence serveur)");
+                            }
+                        } else {
+                            out.println("ERR Vous n'êtes pas dans une partie active");
+                        }
                     } else {
                         out.println("ERR usage: save");
                     }

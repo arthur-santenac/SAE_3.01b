@@ -1,0 +1,10 @@
+{
+  "id": "73dd8ed9-3a61-4795-a513-3a7391cd9b3a",
+  "pseudoBlanc": "Alice",
+  "pseudoNoir": "Bob",
+  "attributionCouleurs": "Blanc: Alice, Noir: Bob",
+  "date": "Sat Jan 24 11:29:06 CET 2026",
+  "statut": "En cours",
+  "joueurAuTrait": "Bob",
+  "coups": ["e2e4"]
+}
