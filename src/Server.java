@@ -235,14 +235,19 @@ class Session extends Thread {
             kpg.initialize(new ECGenParameterSpec("secp256r1"));
             KeyPair myKeyPair = kpg.generateKeyPair();
 
-            String clientPublicKeyBase64 = in.readLine();
+            String ligneRecue = in.readLine();
+            if (ligneRecue == null) return;
+            String clientPublicKeyBase64 = ligneRecue.substring(5);
+            out.println("OK"); 
+
             byte[] clientPublicKeyBytes = Base64.getDecoder().decode(clientPublicKeyBase64);
             KeyFactory kf = KeyFactory.getInstance("EC");
             PublicKey clientPublicKey = kf.generatePublic(new X509EncodedKeySpec(clientPublicKeyBytes));
 
             byte[] myPublicKeyBytes = myKeyPair.getPublic().getEncoded();
             String myPublicKeyBase64 = Base64.getEncoder().encodeToString(myPublicKeyBytes);
-            out.println(myPublicKeyBase64);
+            
+            out.println("sync " + myPublicKeyBase64);
 
             KeyAgreement ka = KeyAgreement.getInstance("ECDH");
             ka.init(myKeyPair.getPrivate());

@@ -27,11 +27,16 @@ public class Client {
 
             byte[] publicKeyBytes = keyPair.getPublic().getEncoded();
             String publicKeyBase64 = Base64.getEncoder().encodeToString(publicKeyBytes);
-            out.println(publicKeyBase64);
-
-            String serverPublicKeyBase64 = in.readLine();
+            
+            out.println("sync " + publicKeyBase64); 
+            
+            in.readLine();
+    
+            String serverCle = in.readLine(); 
+            
+            String serverPublicKeyBase64 = serverCle.substring(5);
+            
             byte[] serverPublicKeyBytes = Base64.getDecoder().decode(serverPublicKeyBase64);
-
             KeyFactory keyFactory = KeyFactory.getInstance("EC");
             X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(serverPublicKeyBytes);
             PublicKey serverPublicKey = keyFactory.generatePublic(x509KeySpec);
