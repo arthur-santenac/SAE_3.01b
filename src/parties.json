@@ -8,3 +8,33 @@
   "joueurAuTrait": "Bob",
   "coups": ["e2e4"]
 }
+{
+  "id": "12e150e9-6418-4581-b94f-54737a9677c3",
+  "pseudoBlanc": "Bob",
+  "pseudoNoir": "Alice",
+  "attributionCouleurs": "Blanc: Bob, Noir: Alice",
+  "date": "Sat Jan 24 12:25:54 CET 2026",
+  "statut": "En cours",
+  "joueurAuTrait": "Alice",
+  "coups": ["e2e4"]
+}
+{
+  "id": "12e150e9-6418-4581-b94f-54737a9677c3",
+  "pseudoBlanc": "Bob",
+  "pseudoNoir": "Alice",
+  "attributionCouleurs": "Blanc: Bob, Noir: Alice",
+  "date": "Sat Jan 24 12:25:54 CET 2026",
+  "statut": "En cours",
+  "joueurAuTrait": "Alice",
+  "coups": ["e2e4"]
+}
+{
+  "id": "12e150e9-6418-4581-b94f-54737a9677c3",
+  "pseudoBlanc": "Bob",
+  "pseudoNoir": "Alice",
+  "attributionCouleurs": "Blanc: Bob, Noir: Alice",
+  "date": "Sat Jan 24 12:25:54 CET 2026",
+  "statut": "En cours",
+  "joueurAuTrait": "Bob",
+  "coups": ["e2e4", "h2h3", "h2h3", "h7h6"]
+}
