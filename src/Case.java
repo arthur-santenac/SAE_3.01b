@@ -2,16 +2,16 @@ public class Case {
 
     private Piece pieceCourante;
 
-    public Case(){
+    public Case() {
         this.pieceCourante = null;
     }
 
-    public void setPieceCourante(Piece piece){
+    public void setPieceCourante(Piece piece) {
         this.pieceCourante = piece;
     }
-    
-    public Piece getPiece(){
-        if (pieceCourante instanceof Piece){
+
+    public Piece getPiece() {
+        if (pieceCourante instanceof Piece) {
             return this.pieceCourante;
         }
         return null;

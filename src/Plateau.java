@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-//import java.util.Collections;
 import java.util.List;
 
 public class Plateau {
@@ -39,10 +38,6 @@ public class Plateau {
         this.terrain.get(7).get(6).setPieceCourante(new Cavalier(1));
         this.terrain.get(7).get(7).setPieceCourante(new Tour(1));
     }
-
-    // public void placer(int ligne, int colonne, Piece piece){
-    // this.terrain.get(ligne).get(colonne).setPieceCourante(piece);
-    // }
 
     public List<List<Case>> getTerrain() {
         return this.terrain;
