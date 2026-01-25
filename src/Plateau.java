@@ -1,8 +1,5 @@
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-
-
 
 public class Plateau{
     private List<List<Case>> terrain;

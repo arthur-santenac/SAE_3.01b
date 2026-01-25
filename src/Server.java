@@ -146,7 +146,7 @@ public class Server {
     }
 
     public static void main(String[] args) {
-        new Server().mainServer(5556);
+        new Server().mainServer(5555);
     }
 }
 
@@ -439,24 +439,6 @@ class Session extends Thread {
                         envoyer(res);
                     } else {
                         envoyer("ERR usage : players");
-                    }
-                } else if (commande[0].equals("save")) {
-                    if (commande.length == 1) {
-
-                    } else {
-                        envoyer("ERR usage : save");
-                    }
-                } else if (commande[0].equals("list_games")) {
-                    if (commande.length == 1) {
-
-                    } else {
-                        envoyer("ERR usage : list_games");
-                    }
-                } else if (commande[0].equals("load")) {
-                    if (commande.length == 2) {
-
-                    } else {
-                        envoyer("ERR usage : load <idPartie>");
                     }
                 } else if (commande[0].equals("help")) {
                     if (commande.length == 1) {

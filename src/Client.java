@@ -12,7 +12,7 @@ public class Client {
     private static SecretKeySpec secretKey;
 
     public static void main(String[] args) {
-        client("localhost", 5556);
+        client("localhost", 5555);
     }
 
     public static void client(String host, int port) {
