@@ -2,7 +2,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class JeuEchec {
-    
+
     Plateau plateau;
     Integer joueurActuel;
     Map<Character, Integer> significationLettre;
@@ -24,7 +24,7 @@ public class JeuEchec {
     public String affichage(boolean inverser) {
         String res = this.plateau.affichage(inverser);
         res += "\nAu joueur " + joueurActuel + " de jouer";
-        return res; 
+        return res;
     }
 
     public String jouer(int numJoueur, String caseDep, String caseArr) {
@@ -34,15 +34,17 @@ public class JeuEchec {
                 int jDep = this.significationLettre.get(coup.charAt(0));
                 int iDep = Character.getNumericValue(coup.charAt(1));
                 int jArr = this.significationLettre.get(coup.charAt(2));
-                int iArr =  Character.getNumericValue(coup.charAt(3));
+                int iArr = Character.getNumericValue(coup.charAt(3));
                 Case caseDepart;
                 Case caseArrive;
                 caseDepart = this.plateau.getTerrain().get(8 - iDep).get(jDep);
                 caseArrive = this.plateau.getTerrain().get(8 - iArr).get(jArr);
                 if (caseDepart.getPiece() != null) {
                     if (caseDepart.getPiece().getNumJoueur() == this.joueurActuel) {
-                        if (caseArrive.getPiece() == null || caseArrive.getPiece().getNumJoueur() != this.joueurActuel) {
-                            if (caseDepart.getPiece().casesPossibles(this.plateau, 8 - iDep, jDep).contains(caseArrive)) {
+                        if (caseArrive.getPiece() == null
+                                || caseArrive.getPiece().getNumJoueur() != this.joueurActuel) {
+                            if (caseDepart.getPiece().casesPossibles(this.plateau, 8 - iDep, jDep)
+                                    .contains(caseArrive)) {
                                 this.plateau.deplacer(caseDepart, caseArrive);
                                 this.joueurActuel = 3 - this.joueurActuel;
                             } else {

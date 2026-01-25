@@ -17,10 +17,10 @@ public class Client {
 
     public static void client(String host, int port) {
         try (Socket socket = new Socket(host, port);
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            Scanner scanner = new Scanner(System.in)) {
-                
+                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                Scanner scanner = new Scanner(System.in)) {
+
             KeyPairGenerator kpg = KeyPairGenerator.getInstance("EC");
             kpg.initialize(new ECGenParameterSpec("secp256r1"));
             KeyPair keyPair = kpg.generateKeyPair();

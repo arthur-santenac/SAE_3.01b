@@ -14,7 +14,7 @@ public abstract class Piece {
     public int getNumJoueur() {
         return numJoueur;
     }
-    
+
     @Override
     public String toString() {
         return " " + this.img + " ";

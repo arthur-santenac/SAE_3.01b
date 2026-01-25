@@ -4,17 +4,20 @@ import java.util.List;
 public class Pion extends Piece {
 
     boolean dejaJouer;
-    
+
     public Pion(int numJoueur) {
         super("♙", numJoueur);
-        if (numJoueur == 2) this.img = "♟";
+        if (numJoueur == 2)
+            this.img = "♟";
         this.dejaJouer = false;
     }
 
     public List<Case> casesPossibles(Plateau plateau, int posX, int posY) {
         int ajout;
-        if (numJoueur == 2) ajout = 1;
-        else ajout = -1;
+        if (numJoueur == 2)
+            ajout = 1;
+        else
+            ajout = -1;
         List<Case> res = new ArrayList<>();
         if (posX < 7) {
             if (plateau.getTerrain().get(posX + ajout).get(posY).getPiece() == null) {
@@ -25,11 +28,13 @@ public class Pion extends Piece {
             }
         }
         if (posY < 7) {
-            if (plateau.getTerrain().get(posX + ajout).get(posY + 1).getPiece() instanceof Piece) res.add(plateau.getTerrain().get(posX + ajout).get(posY + 1));
+            if (plateau.getTerrain().get(posX + ajout).get(posY + 1).getPiece() instanceof Piece)
+                res.add(plateau.getTerrain().get(posX + ajout).get(posY + 1));
         }
         if (posY > 0) {
 
-            if (plateau.getTerrain().get(posX + ajout).get(posY - 1).getPiece() instanceof Piece) res.add(plateau.getTerrain().get(posX + ajout).get(posY - 1));
+            if (plateau.getTerrain().get(posX + ajout).get(posY - 1).getPiece() instanceof Piece)
+                res.add(plateau.getTerrain().get(posX + ajout).get(posY - 1));
         }
         this.dejaJouer = true;
         return res;
