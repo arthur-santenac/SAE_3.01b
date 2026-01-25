@@ -17,7 +17,7 @@ public class Server {
     private Map<String, PartieInfo> parties = new HashMap<>();
     private Map<String, String> joueurEnJeu = new HashMap<>();
 
-    private String Fichier_JOUEURS = "./sauvegarde.json";
+    private String Fichier_JOUEURS = "sauvegarde.json";
 
     public boolean registerPlayer(String login, String password) {
         synchronized (lock) {
@@ -120,7 +120,7 @@ public class Server {
     }
 
     public String recupererHistorique(String pseudoCible) {
-        File file = new File("./parties.json");
+        File file = new File("parties.json");
         if (!file.exists()) {
             return "Aucune partie enregistrée.";
         }
@@ -244,7 +244,7 @@ public class Server {
     }
 
     public boolean sauvegarderPartie(PartieInfo partie) {
-        File file = new File("./parties.json");
+        File file = new File("parties.json");
         List<String> toutesLesParties = new ArrayList<>();
 
         if (file.exists()) {
