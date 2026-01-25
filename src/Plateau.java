@@ -1,17 +1,15 @@
 import java.util.ArrayList;
-import java.util.Collections;
+//import java.util.Collections;
 import java.util.List;
 
-
-
-public class Plateau{
+public class Plateau {
     private List<List<Case>> terrain;
 
-    public Plateau(){
+    public Plateau() {
         this.terrain = new ArrayList<>();
-        for (int i = 0; i<8; i++){
+        for (int i = 0; i < 8; i++) {
             List<Case> ligne = new ArrayList<>();
-            for(int j = 0; j<8; j++){
+            for (int j = 0; j < 8; j++) {
                 ligne.add(new Case());
             }
             this.terrain.add(ligne);
@@ -20,8 +18,10 @@ public class Plateau{
     }
 
     public void initPieces() {
-        for (Case laCase : this.terrain.get(1)) laCase.setPieceCourante(new Pion(2));
-        for (Case laCase : this.terrain.get(6)) laCase.setPieceCourante(new Pion(1));
+        for (Case laCase : this.terrain.get(1))
+            laCase.setPieceCourante(new Pion(2));
+        for (Case laCase : this.terrain.get(6))
+            laCase.setPieceCourante(new Pion(1));
         this.terrain.get(0).get(0).setPieceCourante(new Tour(2));
         this.terrain.get(0).get(1).setPieceCourante(new Cavalier(2));
         this.terrain.get(0).get(2).setPieceCourante(new Fou(2));
@@ -40,9 +40,9 @@ public class Plateau{
         this.terrain.get(7).get(7).setPieceCourante(new Tour(1));
     }
 
-    public void placer(int ligne, int colonne, Piece piece){
-        this.terrain.get(ligne).get(colonne).setPieceCourante(piece);
-    }
+    // public void placer(int ligne, int colonne, Piece piece){
+    // this.terrain.get(ligne).get(colonne).setPieceCourante(piece);
+    // }
 
     public List<List<Case>> getTerrain() {
         return this.terrain;
@@ -57,24 +57,28 @@ public class Plateau{
         int cpt = 0;
         for (List<Case> cases : this.terrain) {
             for (Case laCase : cases) {
-                if (laCase.getPiece() instanceof Roi) ++cpt;
+                if (laCase.getPiece() instanceof Roi)
+                    ++cpt;
             }
         }
-        if (cpt == 2) return true;
+        if (cpt == 2)
+            return true;
         return false;
     }
 
-    public String affichage(boolean inverser){
+    public String affichage(boolean inverser) {
         String res;
         if (!inverser) {
             res = "     A   B   C   D   E   F   G   H\n";
             res += "   ┌───┬───┬───┬───┬───┬───┬───┬───┐\n";
-            for(int i = 0; i<8; i++){
+            for (int i = 0; i < 8; i++) {
                 res += " " + (8 - i) + " │";
-                for(int j = 0; j<8; j++){
+                for (int j = 0; j < 8; j++) {
                     Piece piece = this.terrain.get(i).get(j).getPiece();
-                    if (piece == null) res += "   ";
-                    else res += piece.toString();
+                    if (piece == null)
+                        res += "   ";
+                    else
+                        res += piece.toString();
                     res += "│";
                 }
                 res += "\n";
@@ -85,12 +89,14 @@ public class Plateau{
         } else {
             res = "     H   G   F   E   D   C   B   A\n";
             res += "   ┌───┬───┬───┬───┬───┬───┬───┬───┐\n";
-            for(int i = 0; i<8; i++){
+            for (int i = 0; i < 8; i++) {
                 res += " " + (i + 1) + " │";
-                for(int j = 0; j<8; j++){
+                for (int j = 0; j < 8; j++) {
                     Piece piece = this.terrain.get(7 - i).get(7 - j).getPiece();
-                    if (piece == null) res += "   ";
-                    else res += piece.toString();
+                    if (piece == null)
+                        res += "   ";
+                    else
+                        res += piece.toString();
                     res += "│";
                 }
                 res += "\n";
@@ -103,4 +109,3 @@ public class Plateau{
         return res;
     }
 }
-

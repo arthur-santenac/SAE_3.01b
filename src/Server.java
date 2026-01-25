@@ -5,7 +5,6 @@ import java.security.*;
 import java.security.spec.*;
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
-import java.util.Base64;
 
 public class Server {
 
@@ -120,6 +119,90 @@ public class Server {
         }
     }
 
+    public String recupererHistorique(String pseudoCible) {
+        File file = new File("./parties.json");
+        if (!file.exists()) {
+            return "Aucune partie enregistrée.";
+        }
+
+        StringBuilder resultatFinal = new StringBuilder();
+        resultatFinal.append("--- Vos Parties ---\n");
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+
+            String id = "Inconnu";
+            String pBlanc = "";
+            String pNoir = "";
+            String date = "";
+            String statut = "";
+
+            boolean dansUnePartie = false;
+
+            while ((line = br.readLine()) != null) {
+                line = line.trim();
+
+                if (line.startsWith("{")) {
+                    dansUnePartie = true;
+
+                    id = "Inconnu";
+                    pBlanc = "";
+                    pNoir = "";
+                    date = "";
+                    statut = "";
+                }
+
+                if (dansUnePartie) {
+                    if (line.startsWith("\"id\":")) {
+                        id = extraireValeurJson(line);
+                    } else if (line.startsWith("\"pseudoBlanc\":")) {
+                        pBlanc = extraireValeurJson(line);
+                    } else if (line.startsWith("\"pseudoNoir\":")) {
+                        pNoir = extraireValeurJson(line);
+                    } else if (line.startsWith("\"date\":")) {
+                        date = extraireValeurJson(line);
+                    } else if (line.startsWith("\"statut\":")) {
+                        statut = extraireValeurJson(line);
+                    } else if (line.startsWith("\"resultat\":")) {
+
+                        statut = extraireValeurJson(line);
+                    }
+                }
+
+                if (line.startsWith("}") || line.endsWith("}")) {
+                    dansUnePartie = false;
+
+                    if (pseudoCible.equals(pBlanc) || pseudoCible.equals(pNoir)) {
+                        String adversaire = pseudoCible.equals(pBlanc) ? pNoir : pBlanc;
+                        String couleur = pseudoCible.equals(pBlanc) ? "Blanc" : "Noir";
+
+                        resultatFinal.append(String.format("ID: %s | VS: %s (%s) | Date: %s | Statut: %s\n",
+                                id, adversaire, couleur, date, statut));
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Erreur lecture historique : " + e.getMessage());
+            return "ERR Impossible de lire l'historique.";
+        }
+
+        if (resultatFinal.toString().equals("--- Vos Parties ---\n")) {
+            return "Vous n'avez joué aucune partie pour le moment.";
+        }
+
+        return resultatFinal.toString();
+    }
+
+    private String extraireValeurJson(String ligne) {
+        int debut = ligne.indexOf(":");
+        if (debut == -1)
+            return "";
+
+        String valeur = ligne.substring(debut + 1).trim();
+        valeur = valeur.replace("\"", "").replace(",", "");
+        return valeur;
+    }
+
     public void ajouterConnecte(String identifiant, Session session) {
         this.listeConnectes.put(identifiant, session);
     }
@@ -161,8 +244,31 @@ public class Server {
     }
 
     public boolean sauvegarderPartie(PartieInfo partie) {
-
         File file = new File("./parties.json");
+        List<String> toutesLesParties = new ArrayList<>();
+
+        if (file.exists()) {
+            toutesLesParties = lireBlocsJson(file);
+        }
+
+        String idRecherche = "\"id\": \"" + partie.getId() + "\"";
+        toutesLesParties.removeIf(jsonBlock -> jsonBlock.contains(idRecherche));
+
+        String nouvelleSauvegarde = genererJsonString(partie);
+        toutesLesParties.add(nouvelleSauvegarde);
+
+        try (FileWriter writer = new FileWriter(file, false)) {
+            for (String jsonBlock : toutesLesParties) {
+                writer.write(jsonBlock);
+            }
+            return true;
+        } catch (IOException e) {
+            System.err.println("Erreur sauvegarde partie: " + e.getMessage());
+            return false;
+        }
+    }
+
+    private String genererJsonString(PartieInfo partie) {
         StringBuilder sb = new StringBuilder();
         sb.append("{\n");
         sb.append("  \"id\": \"").append(partie.getId()).append("\",\n");
@@ -188,14 +294,39 @@ public class Server {
         }
         sb.append("]\n");
         sb.append("}\n");
+        return sb.toString();
+    }
 
-        try (FileWriter writer = new FileWriter(file, true)) {
-            writer.write(sb.toString());
-            return true;
+    private List<String> lireBlocsJson(File file) {
+        List<String> blocs = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            StringBuilder currentBlock = new StringBuilder();
+            String line;
+            int accoladeCount = 0;
+            boolean dansUnBloc = false;
+
+            while ((line = br.readLine()) != null) {
+                currentBlock.append(line).append("\n");
+
+                for (char c : line.toCharArray()) {
+                    if (c == '{') {
+                        accoladeCount++;
+                        dansUnBloc = true;
+                    } else if (c == '}') {
+                        accoladeCount--;
+                    }
+                }
+
+                if (dansUnBloc && accoladeCount == 0) {
+                    blocs.add(currentBlock.toString());
+                    currentBlock.setLength(0);
+                    dansUnBloc = false;
+                }
+            }
         } catch (IOException e) {
-            System.err.println("Erreur sauvegarde partie: " + e.getMessage());
-            return false;
+            System.err.println("Erreur lecture pour nettoyage : " + e.getMessage());
         }
+        return blocs;
     }
 }
 
@@ -392,6 +523,23 @@ class Session extends Thread {
                                 afficherJeu(true, fini);
 
                             if (fini) {
+                                String idPartie = server.getJoueurEnJeu().get(this.identifiant);
+
+                                if (idPartie != null) {
+                                    PartieInfo partie = server.getParties().get(idPartie);
+
+                                    if (partie != null) {
+
+                                        String resultat = "Victoire de " + this.identifiant;
+                                        partie.terminerPartie(resultat);
+
+                                        server.sauvegarderPartie(partie);
+                                    }
+
+                                    server.getJoueurEnJeu().remove(this.identifiant);
+                                    server.getJoueurEnJeu().remove(this.adversaire);
+                                }
+
                                 server.getListeJeuEnCours().remove(identifiant);
                                 server.getListeJeuEnCours().remove(adversaire);
                             }
@@ -403,11 +551,30 @@ class Session extends Thread {
                     }
                 } else if (commande[0].equals("leave")) {
                     if (commande.length == 1) {
+
+                        String idPartie = server.getJoueurEnJeu().get(this.identifiant);
+                        if (idPartie != null) {
+                            PartieInfo partie = server.getParties().get(idPartie);
+                            if (partie != null) {
+
+                                String vainqueur = (this.adversaire != null) ? this.adversaire : "Adversaire";
+                                partie.terminerPartie("Victoire par forfait de " + vainqueur);
+                                server.sauvegarderPartie(partie);
+                            }
+
+                            server.getJoueurEnJeu().remove(this.identifiant);
+                            if (this.adversaire != null)
+                                server.getJoueurEnJeu().remove(this.adversaire);
+                        }
+
                         if (this.adversaire != null && server.getListeConnectes().containsKey(this.adversaire)) {
-                            server.getListeConnectes().get(this.adversaire)
-                                    .envoyer("INFO : Votre adversaire a abandonné. Vous avez gagné par forfait !");
+
+                            server.getListeJeuEnCours().remove(this.adversaire);
+
                             server.getListeConnectes().get(this.adversaire).adversaire = null;
                         }
+
+                        server.getListeJeuEnCours().remove(this.identifiant);
                         envoyer("OK Vous avez abandonné la partie.");
                         this.adversaire = null;
                     } else {
@@ -581,14 +748,14 @@ class Session extends Thread {
                 } else if (commande[0].equals("list_games")) {
                     if (commande.length == 1) {
 
+                        if (this.identifiant != null) {
+                            String historique = server.recupererHistorique(this.identifiant);
+                            envoyer(historique);
+                        } else {
+                            envoyer("ERR Vous devez être connecté pour voir vos parties.");
+                        }
                     } else {
                         envoyer("ERR usage : list_games");
-                    }
-                } else if (commande[0].equals("load")) {
-                    if (commande.length == 2) {
-
-                    } else {
-                        envoyer("ERR usage : load <idPartie>");
                     }
                 } else if (commande[0].equals("help")) {
                     if (commande.length == 1) {

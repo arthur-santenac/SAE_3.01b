@@ -1,40 +1,20 @@
 {
-  "id": "73dd8ed9-3a61-4795-a513-3a7391cd9b3a",
-  "pseudoBlanc": "Alice",
-  "pseudoNoir": "Bob",
-  "attributionCouleurs": "Blanc: Alice, Noir: Bob",
-  "date": "Sat Jan 24 11:29:06 CET 2026",
-  "statut": "En cours",
-  "joueurAuTrait": "Bob",
-  "coups": ["e2e4"]
-}
-{
-  "id": "12e150e9-6418-4581-b94f-54737a9677c3",
+  "id": "f215e38c-1284-4ebc-a12c-4d9db890d8ca",
   "pseudoBlanc": "Bob",
   "pseudoNoir": "Alice",
   "attributionCouleurs": "Blanc: Bob, Noir: Alice",
-  "date": "Sat Jan 24 12:25:54 CET 2026",
+  "date": "Sun Jan 25 17:12:30 CET 2026",
   "statut": "En cours",
   "joueurAuTrait": "Alice",
-  "coups": ["e2e4"]
+  "coups": ["e2e4", "e7e5", "f1c4", "b8c6", "d1h5", "g8f6", "h5f7", "h5f7", "h5f7", "h5f7", "h5f7", "h5f7", "h5f7", "h5f7", "g8f6", "h5f7", "h5f7", "h5f7", "g8f6", "g8f6", "g8f6", "g8f6", "g8f6", "h5f7", "h5f7", "h5f7", "h5f7", "h5f7", "h5f7", "h5f7", "h5f7", "h5f7", "h5f7"]
 }
 {
-  "id": "12e150e9-6418-4581-b94f-54737a9677c3",
+  "id": "324e2521-e8b7-482b-a9e4-15d31a74d490",
   "pseudoBlanc": "Bob",
   "pseudoNoir": "Alice",
   "attributionCouleurs": "Blanc: Bob, Noir: Alice",
-  "date": "Sat Jan 24 12:25:54 CET 2026",
-  "statut": "En cours",
-  "joueurAuTrait": "Alice",
-  "coups": ["e2e4"]
-}
-{
-  "id": "12e150e9-6418-4581-b94f-54737a9677c3",
-  "pseudoBlanc": "Bob",
-  "pseudoNoir": "Alice",
-  "attributionCouleurs": "Blanc: Bob, Noir: Alice",
-  "date": "Sat Jan 24 12:25:54 CET 2026",
+  "date": "Sun Jan 25 17:19:12 CET 2026",
   "statut": "En cours",
   "joueurAuTrait": "Bob",
-  "coups": ["e2e4", "h2h3", "h2h3", "h7h6"]
+  "coups": ["e2e4", "e7e5", "f1c4", "b8c6", "d1h5", "g8f6", "h5f7", "f7e8", "f7e8", "f7e8", "f7e8", "f7e8", "f7e8", "f7e8", "f7e8", "f7e8", "h5f7", "h5f7", "h5f7", "h5f7", "h5f7", "f7e8", "f7e8", "a7a6"]
 }
