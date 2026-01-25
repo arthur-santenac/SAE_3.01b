@@ -77,3 +77,23 @@
     "a7a6"
   ]
 }
+{
+  "id": "75650f4f-63d2-46c7-aa7d-6e507236d295",
+  "pseudoBlanc": "Titi",
+  "pseudoNoir": "Toto",
+  "attributionCouleurs": "Blanc: Titi, Noir: Toto",
+  "date": "Sun Jan 25 18:48:59 CET 2026",
+  "statut": "Terminée",
+  "resultat": "Victoire de Titi",
+  "coups": ["e2e4", "f7f5", "d1h5", "h7h6", "h5e8"]
+}
+{
+  "id": "4f9275c3-0a99-47be-9083-2554776ed8eb",
+  "pseudoBlanc": "Titi",
+  "pseudoNoir": "Toto",
+  "attributionCouleurs": "Blanc: Titi, Noir: Toto",
+  "date": "Sun Jan 25 18:50:22 CET 2026",
+  "statut": "Terminée",
+  "resultat": "Victoire par forfait de Toto",
+  "coups": []
+}
